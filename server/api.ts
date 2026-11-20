@@ -1,6 +1,7 @@
 import express, { Router, type ErrorRequestHandler } from "express";
 import { env } from "./env";
 import { HttpError } from "./http-error";
+import { filesRouter } from "./routes/files";
 import { noticesRouter } from "./routes/notices";
 
 /** /api/* 요청을 처리하는 라우터 (그 외 요청은 Next.js 가 처리) */
@@ -13,6 +14,7 @@ apiRouter.get("/health", (_req, res) => {
   res.json({ status: "ok", mode: env.mode });
 });
 apiRouter.use("/notices", noticesRouter);
+apiRouter.use("/files", filesRouter);
 
 apiRouter.use((_req, _res, next) => next(new HttpError(404, "존재하지 않는 API 입니다.")));
 

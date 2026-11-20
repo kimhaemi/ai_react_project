@@ -22,4 +22,10 @@ export const env = {
   port: int("PORT", 3200),
   host: process.env.HOST || "0.0.0.0",
   noticeDataFile: path.resolve(process.cwd(), process.env.NOTICE_DATA_FILE ?? "data/notices.json"),
+  /** 업로드 파일 저장 폴더 */
+  uploadDir: path.resolve(process.cwd(), process.env.UPLOAD_DIR ?? "uploads"),
+  /** 파일 1개 최대 크기 (MB) */
+  uploadMaxSizeMB: int("UPLOAD_MAX_SIZE_MB", 10),
+  /** 한 번에 올릴 수 있는 파일 수 */
+  uploadMaxFiles: int("UPLOAD_MAX_FILES", 10),
 };
