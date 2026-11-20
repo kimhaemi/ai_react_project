@@ -1,6 +1,6 @@
 "use client";
 
-import { Chart, type ChartRow } from "@/components/chart";
+import { Chart, type ChartRow } from "@/components/ui/chart";
 import { DemoPage, DemoSection } from "./Demo";
 
 const MONTHLY: ChartRow[] = [

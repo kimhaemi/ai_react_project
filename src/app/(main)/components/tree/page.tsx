@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import TreeDemo from "@/screens/ui-demo/TreeDemo";
+import TreeDemo from "@/components/view/ui-demo/TreeDemo";
 
 export const metadata: Metadata = { title: "트리" };
 

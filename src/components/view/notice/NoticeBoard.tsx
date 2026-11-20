@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
-import { DataGrid, actionColumn, dateTimeFormatter, formatDate, type CellEditParams, type ColDef } from "@/components/grid";
+import { DataGrid, actionColumn, dateTimeFormatter, formatDate, type CellEditParams, type ColDef } from "@/components/ui/grid";
 import { Button, Input, SearchBox, useDialog, useToast, type SearchField, type SearchValues } from "@/components/ui";
 import { noticeApi } from "@/lib/api/notices";
 import type { Notice, NoticeInput } from "@/types/notice";

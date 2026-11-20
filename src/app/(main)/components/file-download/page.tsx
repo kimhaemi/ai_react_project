@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import FileDownloadDemo from "@/screens/ui-demo/FileDownloadDemo";
+import FileDownloadDemo from "@/components/view/ui-demo/FileDownloadDemo";
 
 export const metadata: Metadata = { title: "파일 다운로드" };
 

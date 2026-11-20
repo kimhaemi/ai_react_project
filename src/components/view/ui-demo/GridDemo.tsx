@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { DataGrid, actionColumn, moveItem, type CellEditParams, type ColDef } from "@/components/grid";
+import { DataGrid, actionColumn, moveItem, type CellEditParams, type ColDef } from "@/components/ui/grid";
 import { Button, useToast } from "@/components/ui";
 import { DemoPage, DemoSection, ValueView } from "./Demo";
 

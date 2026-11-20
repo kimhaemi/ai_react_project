@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import RadioDemo from "@/screens/ui-demo/RadioDemo";
+import RadioDemo from "@/components/view/ui-demo/RadioDemo";
 
 export const metadata: Metadata = { title: "라디오" };
 

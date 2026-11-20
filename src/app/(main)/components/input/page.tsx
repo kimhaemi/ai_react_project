@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import InputDemo from "@/screens/ui-demo/InputDemo";
+import InputDemo from "@/components/view/ui-demo/InputDemo";
 
 export const metadata: Metadata = { title: "입력창" };
 

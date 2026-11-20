@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import NoticeScreen from "@/screens/notice/NoticeScreen";
+import NoticeScreen from "@/components/view/notice/NoticeScreen";
 
 export const metadata: Metadata = { title: "공지사항" };
 
