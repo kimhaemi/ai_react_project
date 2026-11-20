@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import { DataGrid, actionColumn, dateTimeFormatter, formatDate, type ColDef } from "@/components/grid";
-import { Button, Input, SearchBox, type SearchField, type SearchValues } from "@/components/ui";
+import { Button, Input, SearchBox, useDialog, useToast, type SearchField, type SearchValues } from "@/components/ui";
 import { noticeApi } from "@/lib/api/notices";
 import type { Notice, NoticeInput } from "@/types/notice";
 
@@ -55,6 +55,8 @@ export default function NoticeBoard() {
   const [values, setValues] = useState<NoticeInput>(EMPTY_FORM);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const dialog = useDialog();
+  const toast = useToast();
 
   // 목록 조회 (reloadKey 가 바뀌면 다시 조회)
   useEffect(() => {
@@ -96,20 +98,26 @@ export default function NoticeBoard() {
     if (!isPending) setForm(null);
   };
 
-  const remove = useCallback((ids: number[]) => {
+  const remove = useCallback(async (ids: number[]) => {
     if (ids.length === 0) return;
-    if (!window.confirm(`${ids.length}건의 게시글을 삭제하시겠습니까?`)) return;
+    const ok = await dialog.confirm(`선택한 ${ids.length}건의 게시글을 삭제합니다.\n삭제한 글은 되돌릴 수 없습니다.`, {
+      title: "게시글 삭제",
+      okText: "삭제",
+      danger: true,
+    });
+    if (!ok) return;
     startTransition(async () => {
       try {
         await noticeApi.remove(ids);
         const removed = new Set(ids);
         setNotices((list) => list.filter((n) => !removed.has(n.id)));
         setSelectedIds([]);
+        toast.success(`${ids.length}건을 삭제했습니다.`);
       } catch (e) {
-        window.alert(errorMessage(e, "삭제에 실패했습니다."));
+        toast.error(errorMessage(e, "삭제에 실패했습니다."));
       }
     });
-  }, []);
+  }, [dialog, toast]);
 
   const submit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -121,9 +129,11 @@ export default function NoticeBoard() {
         if (form.mode === "create") {
           const created = await noticeApi.create(values);
           setNotices((list) => [...list, created]);
+          toast.success("게시글을 등록했습니다.");
         } else {
           const updated = await noticeApi.update(form.notice.id, values);
           setNotices((list) => list.map((n) => (n.id === updated.id ? updated : n)));
+          toast.success("게시글을 수정했습니다.");
         }
         setForm(null);
       } catch (err) {
