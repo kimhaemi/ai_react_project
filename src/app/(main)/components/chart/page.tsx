@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import ChartDemo from "./ChartDemo";
+import ChartDemo from "@/screens/ui-demo/ChartDemo";
 
 export const metadata: Metadata = { title: "차트" };
 

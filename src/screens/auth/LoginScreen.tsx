@@ -28,7 +28,7 @@ function getRedirectTarget() {
   return target && target.startsWith("/") && !target.startsWith("//") && target !== "/login" ? target : "/";
 }
 
-export default function LoginForm() {
+export default function LoginScreen() {
   const { t } = useI18n();
   const { user, login, loginWithSocial } = useAuth();
   const router = useRouter();

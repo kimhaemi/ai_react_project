@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import CheckboxDemo from "./CheckboxDemo";
+import CheckboxDemo from "@/screens/ui-demo/CheckboxDemo";
 
 export const metadata: Metadata = { title: "체크박스" };
 

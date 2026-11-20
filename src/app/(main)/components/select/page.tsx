@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import SelectDemo from "./SelectDemo";
+import SelectDemo from "@/screens/ui-demo/SelectDemo";
 
 export const metadata: Metadata = { title: "셀렉트 박스" };
 

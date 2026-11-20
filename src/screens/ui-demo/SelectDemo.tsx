@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button, Select, useToast, type SelectOption } from "@/components/ui";
-import { DemoPage, DemoSection, ValueView } from "../_shared/Demo";
+import { DemoPage, DemoSection, ValueView } from "./Demo";
 
 const CITIES = [
   { label: "서울", value: "seoul" },

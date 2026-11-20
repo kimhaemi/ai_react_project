@@ -5,7 +5,7 @@ import { Button, DownloadButton, FileUpload, useDialog, useToast } from "@/compo
 import { fileApi } from "@/lib/api/files";
 import { formatBytes } from "@/lib/download";
 import type { StoredFile } from "@/types/file";
-import { DemoPage, DemoSection } from "../_shared/Demo";
+import { DemoPage, DemoSection } from "./Demo";
 
 export default function FileUploadDemo() {
   const [files, setFiles] = useState<StoredFile[]>([]);

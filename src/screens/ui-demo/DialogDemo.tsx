@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button, Dialog, useDialog, useToast } from "@/components/ui";
-import { DemoPage, DemoSection, ValueView } from "../_shared/Demo";
+import { DemoPage, DemoSection, ValueView } from "./Demo";
 
 export default function DialogDemo() {
   const dialog = useDialog();

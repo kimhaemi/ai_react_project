@@ -6,7 +6,7 @@ import { DownloadButton } from "@/components/ui";
 import { fileApi } from "@/lib/api/files";
 import { downloadCsv, formatBytes, saveBlob } from "@/lib/download";
 import type { StoredFile } from "@/types/file";
-import { DemoPage, DemoSection } from "../_shared/Demo";
+import { DemoPage, DemoSection } from "./Demo";
 
 const SAMPLE = [
   ["번호", "제목", "작성자", "조회수"],

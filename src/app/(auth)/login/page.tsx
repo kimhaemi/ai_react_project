@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import LoginForm from "./LoginForm";
+import LoginScreen from "@/screens/auth/LoginScreen";
 
 export const metadata: Metadata = { title: "로그인" };
 
-export default function LoginPage() {
-  return <LoginForm />;
+export default function Page() {
+  return <LoginScreen />;
 }

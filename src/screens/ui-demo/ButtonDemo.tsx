@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui";
-import { DemoPage, DemoSection } from "../_shared/Demo";
+import { DemoPage, DemoSection } from "./Demo";
 
 const PlusIcon = () => (
   <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden>

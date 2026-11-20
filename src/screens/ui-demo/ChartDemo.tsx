@@ -1,7 +1,7 @@
 "use client";
 
 import { Chart, type ChartRow } from "@/components/chart";
-import { DemoPage, DemoSection } from "../_shared/Demo";
+import { DemoPage, DemoSection } from "./Demo";
 
 const MONTHLY: ChartRow[] = [
   { month: "1월", pc: 4200, mobile: 6100 },

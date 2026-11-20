@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import ButtonDemo from "./ButtonDemo";
+import ButtonDemo from "@/screens/ui-demo/ButtonDemo";
 
 export const metadata: Metadata = { title: "버튼" };
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button, Tree, getBranchIds, getLeafIds, type TreeNode } from "@/components/ui";
-import { DemoPage, DemoSection, ValueView } from "../_shared/Demo";
+import { DemoPage, DemoSection, ValueView } from "./Demo";
 
 const ORG: TreeNode[] = [
   {

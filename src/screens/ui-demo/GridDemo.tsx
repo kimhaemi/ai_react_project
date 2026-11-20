@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { DataGrid, actionColumn, moveItem, type CellEditParams, type ColDef } from "@/components/grid";
 import { Button, useToast } from "@/components/ui";
-import { DemoPage, DemoSection, ValueView } from "../_shared/Demo";
+import { DemoPage, DemoSection, ValueView } from "./Demo";
 
 interface Task {
   id: number;

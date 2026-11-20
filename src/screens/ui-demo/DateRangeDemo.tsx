@@ -4,7 +4,7 @@ import { useState } from "react";
 import { DateRangePicker, RangeCalendar, type DateRange } from "@/components/ui";
 import { addDays } from "@/lib/date";
 import { useToday } from "@/lib/useToday";
-import { DemoPage, DemoSection, ValueView } from "../_shared/Demo";
+import { DemoPage, DemoSection, ValueView } from "./Demo";
 
 export default function DateRangeDemo() {
   const todayStr = useToday();

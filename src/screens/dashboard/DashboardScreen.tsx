@@ -2,7 +2,7 @@
 
 import { useI18n } from "@/i18n/I18nProvider";
 
-export default function Dashboard() {
+export default function DashboardScreen() {
   const { t } = useI18n();
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">

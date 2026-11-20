@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Dashboard from "./Dashboard";
+import DashboardScreen from "@/screens/dashboard/DashboardScreen";
 
 export const metadata: Metadata = { title: "대시보드" };
 
-export default function Home() {
-  return <Dashboard />;
+export default function Page() {
+  return <DashboardScreen />;
 }

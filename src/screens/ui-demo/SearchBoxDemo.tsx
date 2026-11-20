@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { SearchBox, type SearchField, type SearchValues } from "@/components/ui";
-import { DemoPage, DemoSection, ValueView } from "../_shared/Demo";
+import { DemoPage, DemoSection, ValueView } from "./Demo";
 
 const FIELDS: SearchField[] = [
   {

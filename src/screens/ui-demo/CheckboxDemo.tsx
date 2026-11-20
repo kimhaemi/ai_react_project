@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Checkbox, CheckboxGroup } from "@/components/ui";
-import { DemoPage, DemoSection, ValueView } from "../_shared/Demo";
+import { DemoPage, DemoSection, ValueView } from "./Demo";
 
 const FRUITS = [
   { label: "사과", value: "apple" },

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { RadioGroup } from "@/components/ui";
-import { DemoPage, DemoSection, ValueView } from "../_shared/Demo";
+import { DemoPage, DemoSection, ValueView } from "./Demo";
 
 export default function RadioDemo() {
   const [gender, setGender] = useState<string | null>(null);
