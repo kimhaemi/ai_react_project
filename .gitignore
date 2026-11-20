@@ -40,3 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 !.env.example
+
+# 게시판 데이터 (로컬 저장 파일)
+/data/notices.json
