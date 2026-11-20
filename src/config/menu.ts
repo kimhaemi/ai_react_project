@@ -6,7 +6,7 @@ export interface MenuItem {
   labelKey: MessageKey;
   /** 하위 메뉴가 없는 항목만 링크를 가짐 */
   href?: string;
-  icon?: "home" | "board" | "settings";
+  icon?: "home" | "board" | "components" | "settings";
   children?: MenuItem[];
 }
 
@@ -27,6 +27,20 @@ export const MENU: MenuItem[] = [
           { id: "images", labelKey: "menu.board.archive.images", href: "/board/images" },
         ],
       },
+    ],
+  },
+  {
+    id: "ui",
+    labelKey: "menu.ui",
+    icon: "components",
+    children: [
+      { id: "ui-tree", labelKey: "menu.ui.tree", href: "/components/tree" },
+      { id: "ui-input", labelKey: "menu.ui.input", href: "/components/input" },
+      { id: "ui-checkbox", labelKey: "menu.ui.checkbox", href: "/components/checkbox" },
+      { id: "ui-radio", labelKey: "menu.ui.radio", href: "/components/radio" },
+      { id: "ui-button", labelKey: "menu.ui.button", href: "/components/button" },
+      { id: "ui-select", labelKey: "menu.ui.select", href: "/components/select" },
+      { id: "ui-search-box", labelKey: "menu.ui.searchBox", href: "/components/search-box" },
     ],
   },
   {
