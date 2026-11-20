@@ -5,6 +5,7 @@ import { cn } from "@/lib/cn";
 import { useI18n } from "@/i18n/I18nProvider";
 import { Button } from "./Button";
 import { CheckboxGroup, type ChoiceOption } from "./Checkbox";
+import { DateRangePicker } from "./DatePicker";
 import { Input } from "./Input";
 import { RadioGroup } from "./Radio";
 import { Select, type SelectOption } from "./Select";
@@ -145,25 +146,12 @@ export function SearchBox({
         );
       case "dateRange":
         return (
-          <div className="flex items-center gap-2">
-            <Input
-              type="date"
-              aria-label={`${labelText(f.label)} ${t("ui.search.from")}`}
-              containerClassName="flex-1"
-              value={str(f.name)}
-              max={str(f.toName) || undefined}
-              onChange={(e) => set(f.name, e.target.value)}
-            />
-            <span className="text-gray-400">~</span>
-            <Input
-              type="date"
-              aria-label={`${labelText(f.label)} ${t("ui.search.to")}`}
-              containerClassName="flex-1"
-              value={str(f.toName)}
-              min={str(f.name) || undefined}
-              onChange={(e) => set(f.toName, e.target.value)}
-            />
-          </div>
+          <DateRangePicker
+            aria-label={labelText(f.label)}
+            clearable
+            value={{ from: str(f.name) || null, to: str(f.toName) || null }}
+            onChange={(r) => setValues((prev) => ({ ...prev, [f.name]: r.from ?? "", [f.toName]: r.to ?? "" }))}
+          />
         );
     }
   };
