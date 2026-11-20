@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import { DataGrid, actionColumn, dateTimeFormatter, formatDate, type CellEditParams, type ColDef } from "@/components/ui/grid";
-import { Button, Input, SearchBox, useDialog, useToast, type SearchField, type SearchValues } from "@/components/ui";
+import { Button, Input, SearchBox, useUI, type SearchField, type SearchValues } from "@/components/ui";
 import { noticeApi } from "@/lib/api/notices";
 import type { Notice, NoticeInput } from "@/types/notice";
 
@@ -55,8 +55,7 @@ export default function NoticeBoard() {
   const [values, setValues] = useState<NoticeInput>(EMPTY_FORM);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
-  const dialog = useDialog();
-  const toast = useToast();
+  const ui = useUI();
 
   // 목록 조회 (reloadKey 가 바뀌면 다시 조회)
   useEffect(() => {
@@ -98,26 +97,27 @@ export default function NoticeBoard() {
     if (!isPending) setForm(null);
   };
 
-  const remove = useCallback(async (ids: number[]) => {
-    if (ids.length === 0) return;
-    const ok = await dialog.confirm(`선택한 ${ids.length}건의 게시글을 삭제합니다.\n삭제한 글은 되돌릴 수 없습니다.`, {
-      title: "게시글 삭제",
-      okText: "삭제",
-      danger: true,
-    });
-    if (!ok) return;
-    startTransition(async () => {
-      try {
-        await noticeApi.remove(ids);
-        const removed = new Set(ids);
-        setNotices((list) => list.filter((n) => !removed.has(n.id)));
-        setSelectedIds([]);
-        toast.success(`${ids.length}건을 삭제했습니다.`);
-      } catch (e) {
-        toast.error(errorMessage(e, "삭제에 실패했습니다."));
-      }
-    });
-  }, [dialog, toast]);
+  // 확인 → 로딩 → 삭제 → 성공/실패 토스트를 ui.run 하나로 처리
+  const remove = useCallback(
+    async (ids: number[]) => {
+      if (ids.length === 0) return;
+      const result = await ui.run(() => noticeApi.remove(ids), {
+        confirm: {
+          message: `선택한 ${ids.length}건의 게시글을 삭제합니다.\n삭제한 글은 되돌릴 수 없습니다.`,
+          title: "게시글 삭제",
+          okText: "삭제",
+          danger: true,
+        },
+        loading: "삭제 중입니다...",
+        success: `${ids.length}건을 삭제했습니다.`,
+      });
+      if (!result) return;
+      const removed = new Set(ids);
+      setNotices((list) => list.filter((n) => !removed.has(n.id)));
+      setSelectedIds([]);
+    },
+    [ui],
+  );
 
   const submit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -129,11 +129,11 @@ export default function NoticeBoard() {
         if (form.mode === "create") {
           const created = await noticeApi.create(values);
           setNotices((list) => [...list, created]);
-          toast.success("게시글을 등록했습니다.");
+          ui.toast.success("게시글을 등록했습니다.");
         } else {
           const updated = await noticeApi.update(form.notice.id, values);
           setNotices((list) => list.map((n) => (n.id === updated.id ? updated : n)));
-          toast.success("게시글을 수정했습니다.");
+          ui.toast.success("게시글을 수정했습니다.");
         }
         setForm(null);
       } catch (err) {
@@ -163,7 +163,7 @@ export default function NoticeBoard() {
       const value = String(newValue ?? "").trim();
       const label = field === "title" ? "제목" : "작성자";
       if (!value) {
-        toast.warning(`${label}은(는) 비워 둘 수 없습니다.`);
+        ui.toast.warning(`${label}은(는) 비워 둘 수 없습니다.`);
         return;
       }
       if (value === data[field as keyof Notice]) return;
@@ -176,10 +176,10 @@ export default function NoticeBoard() {
         });
         setNotices((list) => list.map((n) => (n.id === updated.id ? updated : n)));
       } catch (e) {
-        toast.error(errorMessage(e, "저장에 실패했습니다."));
+        ui.toast.error(errorMessage(e, "저장에 실패했습니다."));
       }
     },
-    [toast],
+    [ui],
   );
 
   const isFiltered = filtered.length !== notices.length;
