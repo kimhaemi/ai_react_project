@@ -22,7 +22,6 @@ src/
 │   ├── ui/             공통 UI — 화면에서 가져다 씀
 │   │   ├── Button, Input, Select, Checkbox, Radio, Tree, Calendar, DatePicker,
 │   │   │   SearchBox, FileUpload, DownloadButton, Dialog, Toast, Loading ...
-│   │   ├── useUI.ts    토스트·팝업·로딩을 한 번에 쓰는 훅
 │   │   ├── grid/       DataGrid (AG Grid)      ← import "@/components/ui/grid"
 │   │   └── chart/      Chart (recharts)        ← import "@/components/ui/chart"
 │   ├── view/           화면 (페이지별 실제 UI 와 동작)
@@ -31,6 +30,12 @@ src/
 │   ├── layout/         헤더, 왼쪽 메뉴 (앱 틀)
 │   ├── auth/           로그인 상태
 │   └── Providers.tsx   언어·로그인·토스트·팝업·로딩 Provider
+├── hooks/              공통 훅 — 화면에서는 import { ... } from "@/hooks"
+│   ├── useUI.ts        토스트·팝업·로딩을 한 번에 쓰는 훅
+│   ├── useToday.ts     오늘 날짜 (서버 렌더링 중에는 null)
+│   ├── useStoredValue.ts  localStorage 값을 상태처럼
+│   ├── useDismiss.ts   바깥 클릭 / Esc 로 팝업 닫기
+│   └── index.ts        위 훅 + useToast, useDialog, useLoading, useI18n, useAuth 를 한곳에서 내보냄
 ├── config/             메뉴 정의 (menu.ts)
 ├── i18n/               다국어 (ko / en)
 ├── lib/                API 클라이언트(axios), 날짜·다운로드 등 헬퍼
@@ -43,7 +48,8 @@ data/, uploads/         로컬 저장 데이터 (git 제외)
 
 ```tsx
 "use client";
-import { Button, Input, Select, useUI } from "@/components/ui";
+import { Button, Input, Select } from "@/components/ui";
+import { useUI } from "@/hooks";
 import { DataGrid } from "@/components/ui/grid";   // 그리드·차트는 쓰는 화면에서만 따로 import
 
 export default function OrderScreen() {
@@ -82,4 +88,7 @@ export default function OrderScreen() {
 - `app/` 에는 라우팅 파일(page, layout, not-found 등)만 둡니다. UI 는 `components/view/` 로.
 - 한 화면에서만 쓰는 부품은 그 화면 폴더(`components/view/<기능>/`)에, 여러 화면에서 쓰면 `components/ui/` 로 옮깁니다.
 - `components/ui/` 는 `components/view/` 를 import 하지 않습니다 (공통 → 화면 방향 의존 금지).
+- 훅은 `src/hooks/` 에서 관리합니다. 화면·레이아웃은 `@/hooks` 에서 import 합니다.
+  - 독립 훅은 `hooks/` 에 파일로, Provider 의 context 를 쓰는 훅(useToast, useDialog, useLoading, useI18n, useAuth)은 Provider 옆에 두고 `hooks/index.ts` 에서 다시 내보냅니다.
+  - `components/ui`, `lib` 안에서는 순환 참조를 피하려고 `@/hooks` 대신 개별 파일(`@/hooks/useDismiss` 등)을 import 합니다.
 - 그리드·차트는 용량이 커서 `@/components/ui` 에서 한꺼번에 내보내지 않습니다. 필요한 화면에서만 `@/components/ui/grid`, `@/components/ui/chart` 로 불러옵니다.
