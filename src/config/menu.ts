@@ -46,6 +46,8 @@ export const MENU: MenuItem[] = [
       { id: "ui-date-range", labelKey: "menu.ui.dateRange", href: "/components/date-range" },
       { id: "ui-file-upload", labelKey: "menu.ui.fileUpload", href: "/components/file-upload" },
       { id: "ui-file-download", labelKey: "menu.ui.fileDownload", href: "/components/file-download" },
+      { id: "ui-toast", labelKey: "menu.ui.toast", href: "/components/toast" },
+      { id: "ui-dialog", labelKey: "menu.ui.dialog", href: "/components/dialog" },
     ],
   },
   {

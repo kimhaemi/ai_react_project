@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Button, DownloadButton, FileUpload } from "@/components/ui";
+import { Button, DownloadButton, FileUpload, useDialog, useToast } from "@/components/ui";
 import { fileApi } from "@/lib/api/files";
 import { formatBytes } from "@/lib/download";
 import type { StoredFile } from "@/types/file";
@@ -12,6 +12,8 @@ export default function FileUploadDemo() {
   const [limits, setLimits] = useState<{ maxSizeMB: number; maxFiles: number } | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const reload = useCallback(() => setReloadKey((k) => k + 1), []);
+  const dialog = useDialog();
+  const toast = useToast();
 
   useEffect(() => {
     fileApi.config().then(setLimits).catch(() => undefined);
@@ -28,12 +30,13 @@ export default function FileUploadDemo() {
   }, [reloadKey]);
 
   const remove = async (f: StoredFile) => {
-    if (!window.confirm(`'${f.name}' 파일을 삭제하시겠습니까?`)) return;
+    if (!(await dialog.confirm(`'${f.name}' 파일을 삭제하시겠습니까?`, { title: "파일 삭제", okText: "삭제", danger: true }))) return;
     try {
       await fileApi.remove(f.id);
+      toast.success("파일을 삭제했습니다.");
       reload();
     } catch (e) {
-      window.alert(e instanceof Error ? e.message : "삭제에 실패했습니다.");
+      toast.error(e instanceof Error ? e.message : "삭제에 실패했습니다.");
     }
   };
 
@@ -55,6 +58,41 @@ export default function FileUploadDemo() {
           upload={(list, onProgress) => fileApi.upload(list, onProgress)}
           onUploaded={reload}
         />
+      </DemoSection>
+
+      <DemoSection
+        title="버튼 모양"
+        description="공간이 좁은 곳(폼 한 줄, 표 위 도구 막대 등)에 씁니다. 검사·목록·진행률은 영역 모양과 같습니다."
+        code={`<FileUpload variant="button" buttonLabel="첨부파일 추가" upload={...} />
+
+// 고르면 바로 업로드 (버튼에 진행률 표시)
+<FileUpload variant="button" autoUpload buttonVariant="primary" buttonLabel="엑셀 업로드" accept=".xlsx,.xls,.csv" multiple={false} upload={...} />`}
+      >
+        <div className="flex flex-col gap-5">
+          <FileUpload
+            variant="button"
+            label="첨부파일"
+            buttonLabel="첨부파일 추가"
+            maxSize={(limits?.maxSizeMB ?? 10) * 1024 * 1024}
+            maxFiles={limits?.maxFiles ?? 10}
+            upload={(list, onProgress) => fileApi.upload(list, onProgress)}
+            onUploaded={reload}
+          />
+          <FileUpload
+            variant="button"
+            autoUpload
+            buttonVariant="primary"
+            buttonLabel="엑셀 업로드"
+            accept=".xlsx,.xls,.csv"
+            multiple={false}
+            maxSize={(limits?.maxSizeMB ?? 10) * 1024 * 1024}
+            upload={(list, onProgress) => fileApi.upload(list, onProgress)}
+            onUploaded={() => {
+              toast.success("엑셀 파일을 업로드했습니다.");
+              reload();
+            }}
+          />
+        </div>
       </DemoSection>
 
       <DemoSection
