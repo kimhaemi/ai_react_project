@@ -15,33 +15,59 @@ pnpm build && pnpm start   # 운영 모드
 
 ```
 src/
-├── app/            라우터 페이지 (주소 = 폴더). page.tsx 는 메타데이터 + 화면 하나만 불러옴
-│   ├── (main)/     헤더·왼쪽 메뉴가 있는 페이지
-│   └── (auth)/     단독 페이지 (로그인)
-├── screens/        화면. 페이지별 실제 UI 와 동작
-│   ├── dashboard/  notice/  auth/  error/
-│   └── ui-demo/    공통 컴포넌트 예시 화면
-├── components/     공통 컴포넌트 (여러 화면에서 재사용)
-│   ├── ui/         Button, Input, Select, Calendar, Dialog, Toast, FileUpload ...
-│   ├── grid/       DataGrid (AG Grid 공통)
-│   ├── chart/      Chart
-│   ├── layout/     헤더, 왼쪽 메뉴
-│   └── auth/       로그인 상태
-├── config/         메뉴 정의 (menu.ts)
-├── i18n/           다국어 (ko / en)
-├── lib/            API 클라이언트(axios), 날짜·다운로드 등 헬퍼
-└── types/          공용 타입
-server/             API 서버 (Express, /api/*)
-data/, uploads/     로컬 저장 데이터 (git 제외)
+├── app/                라우터 페이지 (주소 = 폴더). page.tsx 는 메타데이터 + 화면(view) 하나만 불러옴
+│   ├── (main)/         헤더·왼쪽 메뉴가 있는 페이지
+│   └── (auth)/         단독 페이지 (로그인)
+├── components/
+│   ├── ui/             공통 UI — 화면에서 가져다 씀
+│   │   ├── Button, Input, Select, Checkbox, Radio, Tree, Calendar, DatePicker,
+│   │   │   SearchBox, FileUpload, DownloadButton, Dialog, Toast, Loading ...
+│   │   ├── useUI.ts    토스트·팝업·로딩을 한 번에 쓰는 훅
+│   │   ├── grid/       DataGrid (AG Grid)      ← import "@/components/ui/grid"
+│   │   └── chart/      Chart (recharts)        ← import "@/components/ui/chart"
+│   ├── view/           화면 (페이지별 실제 UI 와 동작)
+│   │   ├── dashboard/  notice/  auth/  error/
+│   │   └── ui-demo/    공통 UI 예시 화면
+│   ├── layout/         헤더, 왼쪽 메뉴 (앱 틀)
+│   ├── auth/           로그인 상태
+│   └── Providers.tsx   언어·로그인·토스트·팝업·로딩 Provider
+├── config/             메뉴 정의 (menu.ts)
+├── i18n/               다국어 (ko / en)
+├── lib/                API 클라이언트(axios), 날짜·다운로드 등 헬퍼
+└── types/              공용 타입
+server/                 API 서버 (Express, /api/*)
+data/, uploads/         로컬 저장 데이터 (git 제외)
+```
+
+### 화면에서 공통 UI 쓰기
+
+```tsx
+"use client";
+import { Button, Input, Select, useUI } from "@/components/ui";
+import { DataGrid } from "@/components/ui/grid";   // 그리드·차트는 쓰는 화면에서만 따로 import
+
+export default function OrderScreen() {
+  const ui = useUI();
+
+  const save = async () => {
+    const saved = await ui.run(() => orderApi.save(form), {
+      confirm: "저장할까요?",      // 확인 팝업
+      loading: true,              // 화면 전체 로딩
+      success: "저장했습니다.",    // 성공 토스트 (실패하면 오류 토스트 자동)
+    });
+    if (saved) router.push("/orders");
+  };
+  // ui.toast.success(...) / await ui.alert(...) / await ui.confirm(...) / await ui.dialog({...}) / ui.loading.wrap(...)
+}
 ```
 
 ### 새 페이지 추가 순서
 
-1. 화면 만들기: `src/screens/<기능>/<이름>Screen.tsx`
+1. 화면 만들기: `src/components/view/<기능>/<이름>Screen.tsx`
 2. 라우터 연결: `src/app/(main)/<주소>/page.tsx`
    ```tsx
    import type { Metadata } from "next";
-   import OrderScreen from "@/screens/order/OrderScreen";
+   import OrderScreen from "@/components/view/order/OrderScreen";
 
    export const metadata: Metadata = { title: "주문 관리" };
 
@@ -53,6 +79,7 @@ data/, uploads/     로컬 저장 데이터 (git 제외)
 
 ### 규칙
 
-- `app/` 에는 라우팅 파일(page, layout, not-found 등)만 둡니다. UI 는 `screens/` 로.
-- 한 화면에서만 쓰는 부품은 그 화면 폴더(`screens/<기능>/`)에, 여러 화면에서 쓰면 `components/` 로 옮깁니다.
-- `components/` 는 `screens/` 를 import 하지 않습니다 (공통 → 화면 방향 의존 금지).
+- `app/` 에는 라우팅 파일(page, layout, not-found 등)만 둡니다. UI 는 `components/view/` 로.
+- 한 화면에서만 쓰는 부품은 그 화면 폴더(`components/view/<기능>/`)에, 여러 화면에서 쓰면 `components/ui/` 로 옮깁니다.
+- `components/ui/` 는 `components/view/` 를 import 하지 않습니다 (공통 → 화면 방향 의존 금지).
+- 그리드·차트는 용량이 커서 `@/components/ui` 에서 한꺼번에 내보내지 않습니다. 필요한 화면에서만 `@/components/ui/grid`, `@/components/ui/chart` 로 불러옵니다.
