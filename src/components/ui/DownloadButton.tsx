@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { useI18n } from "@/i18n/I18nProvider";
 import { Button, type ButtonProps } from "./Button";
+import { useToast } from "./Toast";
 
 export interface DownloadButtonProps extends Omit<ButtonProps, "onClick" | "loading"> {
   /** 다운로드 실행. onProgress(0~100) 로 진행률 전달 */
   download: (onProgress: (percent: number) => void) => Promise<void> | void;
-  /** 실패했을 때 (기본: alert) */
+  /** 실패했을 때 (기본: 오류 토스트) */
   onError?: (error: unknown) => void;
 }
 
@@ -21,6 +22,7 @@ const DownloadIcon = () => (
 /** 다운로드 버튼 (받는 동안 진행률 표시, 중복 클릭 방지) */
 export function DownloadButton({ download, onError, children, variant = "secondary", icon, ...props }: DownloadButtonProps) {
   const { t } = useI18n();
+  const toast = useToast();
   const [progress, setProgress] = useState<number | null>(null);
 
   const run = async () => {
@@ -29,7 +31,7 @@ export function DownloadButton({ download, onError, children, variant = "seconda
       await download(setProgress);
     } catch (e) {
       if (onError) onError(e);
-      else window.alert(e instanceof Error ? e.message : t("ui.file.downloadFailed"));
+      else toast.error(e instanceof Error ? e.message : t("ui.file.downloadFailed"));
     } finally {
       setProgress(null);
     }
