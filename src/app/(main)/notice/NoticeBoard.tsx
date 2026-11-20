@@ -1,13 +1,46 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
-import { DataGrid, actionColumn, dateTimeFormatter, type ColDef } from "@/components/grid";
+import { DataGrid, actionColumn, dateTimeFormatter, formatDate, type ColDef } from "@/components/grid";
+import { Button, Input, SearchBox, type SearchField, type SearchValues } from "@/components/ui";
 import { noticeApi } from "@/lib/api/notices";
 import type { Notice, NoticeInput } from "@/types/notice";
 
 type FormState = { mode: "create" } | { mode: "edit"; notice: Notice };
 
 const EMPTY_FORM: NoticeInput = { title: "", author: "", content: "" };
+
+const SEARCH_FIELDS: SearchField[] = [
+  {
+    type: "keyword",
+    name: "keyword",
+    typeName: "searchType",
+    label: "검색어",
+    options: [
+      { label: "전체", value: "all" },
+      { label: "제목", value: "title" },
+      { label: "작성자", value: "author" },
+      { label: "내용", value: "content" },
+    ],
+  },
+  { type: "dateRange", name: "from", toName: "to", label: "작성일" },
+];
+
+const INITIAL_SEARCH: SearchValues = { searchType: "all", keyword: "", from: "", to: "" };
+
+/** 검색 조건에 맞는지 확인 */
+function matches(n: Notice, s: SearchValues) {
+  const keyword = String(s.keyword ?? "").toLowerCase();
+  if (keyword) {
+    const type = String(s.searchType ?? "all");
+    const targets = type === "all" ? [n.title, n.author, n.content] : [String(n[type as keyof Notice] ?? "")];
+    if (!targets.some((t) => t.toLowerCase().includes(keyword))) return false;
+  }
+  const created = formatDate(n.createdAt);
+  if (s.from && created < String(s.from)) return false;
+  if (s.to && created > String(s.to)) return false;
+  return true;
+}
 
 const errorMessage = (e: unknown, fallback: string) => (e instanceof Error ? e.message : fallback);
 
@@ -17,7 +50,7 @@ export default function NoticeBoard() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState<SearchValues>(INITIAL_SEARCH);
   const [form, setForm] = useState<FormState | null>(null);
   const [values, setValues] = useState<NoticeInput>(EMPTY_FORM);
   const [error, setError] = useState<string | null>(null);
@@ -44,6 +77,8 @@ export default function NoticeBoard() {
     setLoading(true);
     setReloadKey((k) => k + 1);
   };
+
+  const filtered = useMemo(() => notices.filter((n) => matches(n, search)), [notices, search]);
 
   const openCreate = useCallback(() => {
     setValues(EMPTY_FORM);
@@ -112,62 +147,53 @@ export default function NoticeBoard() {
     [openEdit, remove],
   );
 
+  const isFiltered = filtered.length !== notices.length;
+
   return (
     <div className="flex flex-col gap-4">
+      <SearchBox fields={SEARCH_FIELDS} initialValues={INITIAL_SEARCH} onSearch={setSearch} loading={loading} />
+
       <div className="flex flex-wrap items-center gap-2">
-        <input
-          type="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="검색어를 입력하세요"
-          className="w-64 rounded border border-gray-300 px-3 py-1.5 text-sm"
-        />
-        <span className="text-sm text-gray-500">총 {notices.length}건</span>
-        <button
-          type="button"
-          onClick={reload}
-          disabled={loading}
-          className="rounded border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-40"
-        >
+        <span className="text-sm text-gray-600">
+          {isFiltered ? (
+            <>
+              검색 결과 <b className="text-blue-600">{filtered.length}</b>건 / 전체 {notices.length}건
+            </>
+          ) : (
+            <>
+              총 <b>{notices.length}</b>건
+            </>
+          )}
+        </span>
+        <Button size="sm" variant="ghost" onClick={reload} disabled={loading}>
           새로고침
-        </button>
+        </Button>
         <div className="ml-auto flex gap-2">
-          <button
-            type="button"
-            onClick={() => remove(selectedIds)}
-            disabled={selectedIds.length === 0 || isPending}
-            className="rounded bg-red-600 px-4 py-1.5 text-sm text-white hover:bg-red-700 disabled:opacity-40"
-          >
+          <Button variant="danger" onClick={() => remove(selectedIds)} disabled={selectedIds.length === 0 || isPending}>
             선택 삭제{selectedIds.length > 0 ? ` (${selectedIds.length})` : ""}
-          </button>
-          <button
-            type="button"
-            onClick={openCreate}
-            disabled={isPending}
-            className="rounded bg-blue-600 px-4 py-1.5 text-sm text-white hover:bg-blue-700 disabled:opacity-40"
-          >
+          </Button>
+          <Button onClick={openCreate} disabled={isPending}>
             등록
-          </button>
+          </Button>
         </div>
       </div>
 
       {loadError && (
         <div role="alert" className="flex items-center gap-3 rounded border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           <span className="flex-1">{loadError}</span>
-          <button type="button" onClick={reload} className="rounded border border-red-300 px-3 py-1 hover:bg-red-100">
+          <Button size="sm" variant="secondary" onClick={reload}>
             다시 시도
-          </button>
+          </Button>
         </div>
       )}
 
       <DataGrid<Notice>
         loading={loading}
-        rowData={notices}
+        rowData={filtered}
         columnDefs={columnDefs}
         rowIdField="id"
         rowSelection={{ mode: "multiRow" }}
-        quickFilterText={search}
-        emptyMessage="등록된 게시글이 없습니다."
+        emptyMessage={isFiltered ? "검색 결과가 없습니다." : "등록된 게시글이 없습니다."}
         onRowDoubleClicked={(e) => e.data && openEdit(e.data)}
         onSelectionChanged={(e) => setSelectedIds(e.api.getSelectedRows().map((r) => r.id))}
       />
@@ -178,64 +204,47 @@ export default function NoticeBoard() {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
           onMouseDown={(e) => e.target === e.currentTarget && closeForm()}
         >
-          <form
-            onSubmit={submit}
-            className="flex w-full max-w-2xl flex-col gap-4 rounded-lg bg-white p-6 text-gray-900 shadow-xl"
-          >
+          <form onSubmit={submit} className="flex w-full max-w-2xl flex-col gap-4 rounded-lg bg-white p-6 text-gray-900 shadow-xl">
             <h2 className="text-lg font-semibold">
               {form.mode === "create" ? "공지사항 등록" : `공지사항 수정 (#${form.notice.id})`}
             </h2>
 
-            <label className="flex flex-col gap-1 text-sm">
-              제목 *
-              <input
-                autoFocus
-                maxLength={200}
-                value={values.title}
-                onChange={(e) => setValues((v) => ({ ...v, title: e.target.value }))}
-                className="rounded border border-gray-300 px-3 py-2"
-              />
-            </label>
+            <Input
+              label="제목"
+              required
+              autoFocus
+              maxLength={200}
+              value={values.title}
+              onChange={(e) => setValues((v) => ({ ...v, title: e.target.value }))}
+            />
+            <Input
+              label="작성자"
+              required
+              maxLength={50}
+              value={values.author}
+              onChange={(e) => setValues((v) => ({ ...v, author: e.target.value }))}
+            />
 
-            <label className="flex flex-col gap-1 text-sm">
-              작성자 *
-              <input
-                maxLength={50}
-                value={values.author}
-                onChange={(e) => setValues((v) => ({ ...v, author: e.target.value }))}
-                className="rounded border border-gray-300 px-3 py-2"
-              />
-            </label>
-
-            <label className="flex flex-col gap-1 text-sm">
+            <label className="flex flex-col gap-1.5 text-sm font-medium text-gray-700">
               내용
               <textarea
                 rows={10}
                 maxLength={10000}
                 value={values.content}
                 onChange={(e) => setValues((v) => ({ ...v, content: e.target.value }))}
-                className="resize-y rounded border border-gray-300 px-3 py-2"
+                className="resize-y rounded-md border border-gray-300 px-3 py-2 font-normal text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               />
             </label>
 
             {error && <p className="text-sm text-red-600">{error}</p>}
 
             <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={closeForm}
-                disabled={isPending}
-                className="rounded border border-gray-300 px-4 py-1.5 text-sm hover:bg-gray-50"
-              >
+              <Button variant="secondary" onClick={closeForm} disabled={isPending}>
                 취소
-              </button>
-              <button
-                type="submit"
-                disabled={isPending}
-                className="rounded bg-blue-600 px-4 py-1.5 text-sm text-white hover:bg-blue-700 disabled:opacity-40"
-              >
-                {isPending ? "저장 중..." : form.mode === "create" ? "등록" : "저장"}
-              </button>
+              </Button>
+              <Button type="submit" loading={isPending}>
+                {form.mode === "create" ? "등록" : "저장"}
+              </Button>
             </div>
           </form>
         </div>
