@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
-import { DataGrid, actionColumn, dateTimeFormatter, formatDate, type ColDef } from "@/components/grid";
+import { DataGrid, actionColumn, dateTimeFormatter, formatDate, type CellEditParams, type ColDef } from "@/components/grid";
 import { Button, Input, SearchBox, useDialog, useToast, type SearchField, type SearchValues } from "@/components/ui";
 import { noticeApi } from "@/lib/api/notices";
 import type { Notice, NoticeInput } from "@/types/notice";
@@ -145,8 +145,8 @@ export default function NoticeBoard() {
   const columnDefs = useMemo<ColDef<Notice>[]>(
     () => [
       { field: "id", headerName: "번호", width: 90, sort: "desc", filter: false },
-      { field: "title", headerName: "제목", flex: 1, minWidth: 200 },
-      { field: "author", headerName: "작성자", width: 130 },
+      { field: "title", headerName: "제목", flex: 1, minWidth: 200, editable: true, cellEditorParams: { maxLength: 200 } },
+      { field: "author", headerName: "작성자", width: 130, editable: true, cellEditorParams: { maxLength: 50 } },
       { field: "createdAt", headerName: "작성일", width: 170, filter: false, valueFormatter: dateTimeFormatter },
       { field: "updatedAt", headerName: "수정일", width: 170, filter: false, valueFormatter: dateTimeFormatter },
       actionColumn<Notice>([
@@ -155,6 +155,31 @@ export default function NoticeBoard() {
       ]),
     ],
     [openEdit, remove],
+  );
+
+  // 셀 더블클릭 편집 → 저장 성공 시에만 목록 갱신 (실패하면 원래 값 유지)
+  const saveCell = useCallback(
+    async ({ data, field, newValue }: CellEditParams<Notice>) => {
+      const value = String(newValue ?? "").trim();
+      const label = field === "title" ? "제목" : "작성자";
+      if (!value) {
+        toast.warning(`${label}은(는) 비워 둘 수 없습니다.`);
+        return;
+      }
+      if (value === data[field as keyof Notice]) return;
+      try {
+        const updated = await noticeApi.update(data.id, {
+          title: data.title,
+          author: data.author,
+          content: data.content,
+          [field]: value,
+        });
+        setNotices((list) => list.map((n) => (n.id === updated.id ? updated : n)));
+      } catch (e) {
+        toast.error(errorMessage(e, "저장에 실패했습니다."));
+      }
+    },
+    [toast],
   );
 
   const isFiltered = filtered.length !== notices.length;
@@ -204,10 +229,10 @@ export default function NoticeBoard() {
         rowIdField="id"
         rowSelection={{ mode: "multiRow" }}
         emptyMessage={isFiltered ? "검색 결과가 없습니다." : "등록된 게시글이 없습니다."}
-        onRowDoubleClicked={(e) => e.data && openEdit(e.data)}
+        onCellEdit={saveCell}
         onSelectionChanged={(e) => setSelectedIds(e.api.getSelectedRows().map((r) => r.id))}
       />
-      <p className="text-xs text-gray-500">행을 더블클릭하면 수정할 수 있습니다.</p>
+      <p className="text-xs text-gray-500">제목·작성자 칸을 더블클릭하면 바로 고칠 수 있습니다. (Enter 저장, Esc 취소) 내용까지 고치려면 [수정] 버튼을 누르세요.</p>
 
       {form && (
         <div
