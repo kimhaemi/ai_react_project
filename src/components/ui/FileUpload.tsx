@@ -4,7 +4,7 @@ import { useId, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { formatBytes } from "@/lib/download";
 import { useI18n } from "@/i18n/I18nProvider";
-import { Button } from "./Button";
+import { Button, type ButtonVariant } from "./Button";
 import { FieldMessage, type FieldBaseProps } from "./Field";
 
 export interface FileUploadProps extends FieldBaseProps {
@@ -22,8 +22,13 @@ export interface FileUploadProps extends FieldBaseProps {
   /** 파일을 고르면 바로 업로드 */
   autoUpload?: boolean;
   disabled?: boolean;
-  /** 드롭 영역 안 설명 */
+  /** 드롭 영역 안 설명 (버튼 모양일 때는 버튼 옆 설명) */
   description?: ReactNode;
+  /** dropzone: 끌어다 놓는 영역(기본) / button: 버튼 하나 */
+  variant?: "dropzone" | "button";
+  /** 버튼 모양일 때 버튼 글자 */
+  buttonLabel?: ReactNode;
+  buttonVariant?: ButtonVariant;
   className?: string;
 }
 
@@ -55,6 +60,9 @@ export function FileUpload({
   autoUpload = false,
   disabled,
   description,
+  variant = "dropzone",
+  buttonLabel,
+  buttonVariant = "secondary",
   label,
   hint,
   error: externalError,
@@ -123,6 +131,30 @@ export function FileUpload({
   };
 
   const off = disabled || uploading;
+  const limitsText =
+    description ??
+    [
+      accept && t("ui.file.accept", { accept }),
+      maxSize && t("ui.file.maxSize", { size: formatBytes(maxSize) }),
+      multiple && maxFiles && t("ui.file.maxFiles", { count: maxFiles }),
+    ]
+      .filter(Boolean)
+      .join(" · ");
+  const openPicker = () => !off && inputRef.current?.click();
+  const fileInput = (
+    <input
+      ref={inputRef}
+      type="file"
+      accept={accept}
+      multiple={multiple}
+      disabled={off}
+      className="hidden"
+      onChange={(e) => {
+        if (e.target.files) add(e.target.files);
+        e.target.value = ""; // 같은 파일을 다시 고를 수 있도록
+      }}
+    />
+  );
 
   return (
     <div className={cn("flex flex-col gap-2", className)}>
@@ -133,67 +165,64 @@ export function FileUpload({
         </span>
       )}
 
-      <div
-        role="button"
-        tabIndex={off ? -1 : 0}
-        aria-labelledby={label ? `${id}-label` : undefined}
-        aria-label={label ? undefined : t("ui.file.select")}
-        aria-disabled={off || undefined}
-        onClick={() => !off && inputRef.current?.click()}
-        onKeyDown={(e) => {
-          if (!off && (e.key === "Enter" || e.key === " ")) {
-            e.preventDefault();
-            inputRef.current?.click();
-          }
-        }}
-        onDragOver={(e) => {
-          e.preventDefault();
-          if (!off) setDragging(true);
-        }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setDragging(false);
-          if (!off) add(e.dataTransfer.files);
-        }}
-        className={cn(
-          "flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-dashed px-4 py-8 text-center transition outline-none",
-          "focus-visible:ring-2 focus-visible:ring-blue-300",
-          dragging ? "border-blue-500 bg-blue-50" : "border-gray-300 bg-gray-50",
-          off ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:border-blue-400 hover:bg-blue-50/50",
-        )}
-      >
-        <svg viewBox="0 0 24 24" className="size-8 text-gray-400" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-          <path d="M12 16V4m0 0-4 4m4-4 4 4" />
-          <path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
-        </svg>
-        <p className="text-sm text-gray-700">
-          <span className="font-semibold text-blue-600">{t("ui.file.select")}</span> {t("ui.file.orDrop")}
-        </p>
-        <p className="text-xs text-gray-500">
-          {description ??
-            [
-              accept && t("ui.file.accept", { accept }),
-              maxSize && t("ui.file.maxSize", { size: formatBytes(maxSize) }),
-              multiple && maxFiles && t("ui.file.maxFiles", { count: maxFiles }),
-            ]
-              .filter(Boolean)
-              .join(" · ")}
-        </p>
-        <input
-          ref={inputRef}
-          type="file"
-          accept={accept}
-          multiple={multiple}
-          disabled={off}
-          className="hidden"
-          onChange={(e) => {
-            if (e.target.files) add(e.target.files);
-            e.target.value = ""; // 같은 파일을 다시 고를 수 있도록
+      {variant === "button" ? (
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            variant={buttonVariant}
+            onClick={openPicker}
+            disabled={disabled}
+            loading={uploading}
+            aria-labelledby={label ? `${id}-label ${id}-btn` : undefined}
+            id={`${id}-btn`}
+            icon={<UploadIcon className="size-4" />}
+          >
+            {uploading && autoUpload ? `${t("ui.file.uploading")} ${progress}%` : (buttonLabel ?? t("ui.file.select"))}
+          </Button>
+          {limitsText && <span className="text-xs text-gray-500">{limitsText}</span>}
+          {fileInput}
+        </div>
+      ) : (
+        <div
+          role="button"
+          tabIndex={off ? -1 : 0}
+          aria-labelledby={label ? `${id}-label` : undefined}
+          aria-label={label ? undefined : t("ui.file.select")}
+          aria-disabled={off || undefined}
+          onClick={openPicker}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              openPicker();
+            }
           }}
-        />
-      </div>
-
+          onDragOver={(e) => {
+            e.preventDefault();
+            if (!off) setDragging(true);
+          }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDragging(false);
+            if (!off) add(e.dataTransfer.files);
+          }}
+          className={cn(
+            "flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-dashed px-4 py-8 text-center transition outline-none",
+            "focus-visible:ring-2 focus-visible:ring-blue-300",
+            dragging ? "border-blue-500 bg-blue-50" : "border-gray-300 bg-gray-50",
+            off ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:border-blue-400 hover:bg-blue-50/50",
+          )}
+        >
+          <svg viewBox="0 0 24 24" className="size-8 text-gray-400" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M12 16V4m0 0-4 4m4-4 4 4" />
+            <path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+          </svg>
+          <p className="text-sm text-gray-700">
+            <span className="font-semibold text-blue-600">{t("ui.file.select")}</span> {t("ui.file.orDrop")}
+          </p>
+          <p className="text-xs text-gray-500">{limitsText}</p>
+          {fileInput}
+        </div>
+      )}
       {pending.length > 0 && (
         <ul className="divide-y divide-gray-100 rounded-md border border-gray-200">
           {pending.map((p) => (
@@ -254,6 +283,15 @@ export function FileUpload({
       )}
       <FieldMessage id={id} hint={hint} error={externalError} />
     </div>
+  );
+}
+
+function UploadIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M12 16V4m0 0-4 4m4-4 4 4" />
+      <path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+    </svg>
   );
 }
 
