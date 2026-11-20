@@ -114,7 +114,7 @@ export function Dialog({ open, title, children, tone = "info", buttons, onClose,
   );
 }
 
-/* ---------- useDialog(): await dialog.alert(...) / await dialog.confirm(...) ---------- */
+/* ---------- useDialog(): await dialog.alert / confirm / open ---------- */
 
 export interface AlertOptions {
   title?: ReactNode;
@@ -128,60 +128,81 @@ export interface ConfirmOptions extends AlertOptions {
   danger?: boolean;
 }
 
+export interface OpenDialogOptions {
+  title?: ReactNode;
+  /** 본문 (글자나 JSX) */
+  content?: ReactNode;
+  tone?: DialogTone;
+  /** 버튼 목록 (왼쪽부터). 누른 버튼의 value 가 결과로 돌아옴 */
+  buttons: DialogButton[];
+  /** Esc / 바깥 클릭으로 닫을 때 결과 (기본 "cancel") */
+  dismissValue?: string;
+  closeOnBackdrop?: boolean;
+}
+
 export interface DialogApi {
   /** 알림 팝업. 닫히면 끝남 */
   alert: (message: ReactNode, options?: AlertOptions) => Promise<void>;
   /** 확인 팝업. 확인 = true, 취소/닫기 = false */
   confirm: (message: ReactNode, options?: ConfirmOptions) => Promise<boolean>;
+  /** 버튼을 직접 구성하는 팝업. 누른 버튼의 value 를 돌려줌 */
+  open: (options: OpenDialogOptions) => Promise<string>;
 }
 
-interface Request {
+interface Request extends OpenDialogOptions {
   id: number;
-  kind: "alert" | "confirm";
-  message: ReactNode;
-  options: ConfirmOptions;
-  resolve: (ok: boolean) => void;
+  resolve: (value: string) => void;
 }
 
 const DialogContext = createContext<DialogApi | null>(null);
 
-/** 앱 전체에서 useDialog() 로 알림/확인 팝업을 띄울 수 있게 해 주는 Provider. 여러 개 요청하면 차례대로 표시 */
+/** 앱 전체에서 useDialog() 로 팝업을 띄울 수 있게 해 주는 Provider. 여러 개 요청하면 차례대로 표시 */
 export function DialogProvider({ children }: { children: ReactNode }) {
   const { t } = useI18n();
   const [queue, setQueue] = useState<Request[]>([]);
   const seq = useRef(0);
   const current = queue[0];
 
-  const push = useCallback(
-    (kind: Request["kind"], message: ReactNode, options: ConfirmOptions = {}) =>
-      new Promise<boolean>((resolve) => {
-        setQueue((q) => [...q, { id: ++seq.current, kind, message, options, resolve }]);
+  const open = useCallback(
+    (options: OpenDialogOptions) =>
+      new Promise<string>((resolve) => {
+        setQueue((q) => [...q, { ...options, id: ++seq.current, resolve }]);
       }),
     [],
   );
 
   const api = useMemo<DialogApi>(
     () => ({
-      alert: (m, o) => push("alert", m, o).then(() => undefined),
-      confirm: (m, o) => push("confirm", m, o),
+      open,
+      alert: (message, o = {}) =>
+        open({
+          title: o.title,
+          content: message,
+          tone: o.tone ?? "info",
+          buttons: [{ label: o.okText ?? t("ui.dialog.ok"), value: "ok", variant: "primary", autoFocus: true }],
+          // 알림 팝업은 Esc/바깥 클릭도 "확인" 으로 처리
+          dismissValue: "ok",
+        }).then(() => undefined),
+      confirm: (message, o = {}) =>
+        open({
+          title: o.title,
+          content: message,
+          tone: o.tone ?? (o.danger ? "danger" : "warning"),
+          buttons: [
+            // 위험한 작업은 실수 방지를 위해 [취소]에 먼저 포커스
+            { label: o.cancelText ?? t("ui.dialog.cancel"), value: "cancel", variant: "secondary", autoFocus: !!o.danger },
+            { label: o.okText ?? t("ui.dialog.ok"), value: "ok", variant: o.danger ? "danger" : "primary", autoFocus: !o.danger },
+          ],
+        }).then((v) => v === "ok"),
     }),
-    [push],
+    [open, t],
   );
 
   const close = (value: string) => {
     if (!current) return;
-    current.resolve(value === "ok");
+    current.resolve(value);
     setQueue((q) => q.slice(1));
   };
-
-  const o = current?.options ?? {};
-  const buttons: DialogButton[] =
-    current?.kind === "confirm"
-      ? [
-          { label: o.cancelText ?? t("ui.dialog.cancel"), value: "cancel", variant: "secondary", autoFocus: !!o.danger },
-          { label: o.okText ?? t("ui.dialog.ok"), value: "ok", variant: o.danger ? "danger" : "primary", autoFocus: !o.danger },
-        ]
-      : [{ label: o.okText ?? t("ui.dialog.ok"), value: "ok", variant: "primary", autoFocus: true }];
 
   return (
     <DialogContext.Provider value={api}>
@@ -189,14 +210,14 @@ export function DialogProvider({ children }: { children: ReactNode }) {
       <Dialog
         key={current?.id}
         open={!!current}
-        title={o.title}
-        tone={o.tone ?? (o.danger ? "danger" : current?.kind === "confirm" ? "warning" : "info")}
-        buttons={buttons}
+        title={current?.title}
+        tone={current?.tone}
+        buttons={current?.buttons ?? []}
         onClose={close}
-        // 알림 팝업은 Esc/바깥 클릭도 "확인" 으로 처리
-        dismissValue={current?.kind === "alert" ? "ok" : "cancel"}
+        dismissValue={current?.dismissValue}
+        closeOnBackdrop={current?.closeOnBackdrop}
       >
-        {current?.message}
+        {current?.content}
       </Dialog>
     </DialogContext.Provider>
   );
