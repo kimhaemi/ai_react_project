@@ -2,8 +2,9 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { DataGrid, actionColumn, moveItem, type CellEditParams, type ColDef } from "@/components/ui/grid";
-import { Button, useToast } from "@/components/ui";
+import { Button } from "@/components/ui";
 import { DemoPage, DemoSection, ValueView } from "./Demo";
+import { useToast } from "@/hooks";
 
 interface Task {
   id: number;

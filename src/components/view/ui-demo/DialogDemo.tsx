@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Dialog, useDialog, useToast } from "@/components/ui";
+import { Button, Dialog } from "@/components/ui";
 import { DemoPage, DemoSection, ValueView } from "./Demo";
+import { useDialog, useToast } from "@/hooks";
 
 export default function DialogDemo() {
   const dialog = useDialog();

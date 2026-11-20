@@ -1,7 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { today, type DateString } from "./date";
+import { today, type DateString } from "@/lib/date";
 
 // 1분마다 확인해서 자정이 지나면 갱신
 const subscribe = (cb: () => void) => {

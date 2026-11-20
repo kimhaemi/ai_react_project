@@ -1,7 +1,8 @@
 "use client";
 
-import { Button, useToast } from "@/components/ui";
+import { Button } from "@/components/ui";
 import { DemoPage, DemoSection } from "./Demo";
+import { useToast } from "@/hooks";
 
 export default function ToastDemo() {
   const toast = useToast();

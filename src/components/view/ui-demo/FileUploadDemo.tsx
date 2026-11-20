@@ -1,11 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Button, DownloadButton, FileUpload, useDialog, useToast } from "@/components/ui";
+import { Button, DownloadButton, FileUpload } from "@/components/ui";
 import { fileApi } from "@/lib/api/files";
 import { formatBytes } from "@/lib/download";
 import type { StoredFile } from "@/types/file";
 import { DemoPage, DemoSection } from "./Demo";
+import { useDialog, useToast } from "@/hooks";
 
 export default function FileUploadDemo() {
   const [files, setFiles] = useState<StoredFile[]>([]);

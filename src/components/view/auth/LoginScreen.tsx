@@ -3,13 +3,12 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useAuth, type SocialProvider } from "@/components/auth/AuthProvider";
+import { type SocialProvider } from "@/components/auth/AuthProvider";
 import { GoogleIcon, KakaoIcon, NaverIcon } from "@/components/auth/SocialIcons";
 import LanguageSelect from "@/components/layout/LanguageSelect";
 import { LogoIcon } from "@/components/layout/icons";
-import { useI18n } from "@/i18n/I18nProvider";
 import type { MessageKey } from "@/i18n/dictionaries";
-import { useStoredValue } from "@/lib/useStoredValue";
+import { useAuth, useI18n, useStoredValue } from "@/hooks";
 
 const SOCIALS: {
   provider: SocialProvider;

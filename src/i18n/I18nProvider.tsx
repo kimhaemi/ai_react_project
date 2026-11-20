@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo } from "react";
-import { useStoredValue } from "@/lib/useStoredValue";
+import { useStoredValue } from "@/hooks/useStoredValue";
 import { DEFAULT_LANG, LANGUAGES, dictionaries, type Lang, type MessageKey } from "./dictionaries";
 
 type Translate = (key: MessageKey, params?: Record<string, string | number>) => string;

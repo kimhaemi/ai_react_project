@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 import { addDays, addMonths, monthGrid, parseDate, startOfMonth, type DateString } from "@/lib/date";
-import { useToday } from "@/lib/useToday";
+import { useToday } from "@/hooks/useToday";
 import { useI18n } from "@/i18n/I18nProvider";
 
 export interface DateRange {

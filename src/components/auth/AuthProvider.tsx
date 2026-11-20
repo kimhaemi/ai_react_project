@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useMemo } from "react";
-import { useStoredValue } from "@/lib/useStoredValue";
+import { useStoredValue } from "@/hooks/useStoredValue";
 
 export type SocialProvider = "google" | "kakao" | "naver";
 export type LoginProvider = "local" | SocialProvider;

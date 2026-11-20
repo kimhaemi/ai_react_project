@@ -1,9 +1,9 @@
 "use client";
 
 import { useMemo, type ReactNode } from "react";
-import { useDialog, type AlertOptions, type ConfirmOptions, type OpenDialogOptions } from "./Dialog";
-import { useLoading, type LoadingApi } from "./Loading";
-import { useToast, type ToastApi } from "./Toast";
+import { useDialog, type AlertOptions, type ConfirmOptions, type OpenDialogOptions } from "@/components/ui/Dialog";
+import { useLoading, type LoadingApi } from "@/components/ui/Loading";
+import { useToast, type ToastApi } from "@/components/ui/Toast";
 
 export interface RunOptions {
   /** 실행 전에 물어볼 확인 문구 (취소하면 실행하지 않음) */

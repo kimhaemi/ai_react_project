@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
-import { useStoredValue } from "@/lib/useStoredValue";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
+import { useStoredValue } from "@/hooks";
 
 const DESKTOP_QUERY = "(min-width: 768px)";
 /** 접힌 메뉴에 마우스를 올린 뒤 펼쳐지기까지 / 벗어난 뒤 접히기까지 (ms) */

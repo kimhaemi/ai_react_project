@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Select, useToast, type SelectOption } from "@/components/ui";
+import { Button, Select, type SelectOption } from "@/components/ui";
 import { DemoPage, DemoSection, ValueView } from "./Demo";
+import { useToast } from "@/hooks";
 
 const CITIES = [
   { label: "서울", value: "seoul" },

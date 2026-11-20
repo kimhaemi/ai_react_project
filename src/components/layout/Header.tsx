@@ -2,12 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAuth } from "@/components/auth/AuthProvider";
-import { useI18n } from "@/i18n/I18nProvider";
 import MenuSearch from "./MenuSearch";
 import LanguageSelect from "./LanguageSelect";
 import { cn } from "@/lib/cn";
 import { LogoIcon, UserIcon } from "./icons";
+import { useAuth, useI18n } from "@/hooks";
 
 interface HeaderProps {
   onToggleMenu: () => void;

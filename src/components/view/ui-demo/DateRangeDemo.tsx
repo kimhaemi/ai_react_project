@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { DateRangePicker, RangeCalendar, type DateRange } from "@/components/ui";
 import { addDays } from "@/lib/date";
-import { useToday } from "@/lib/useToday";
 import { DemoPage, DemoSection, ValueView } from "./Demo";
+import { useToday } from "@/hooks";
 
 export default function DateRangeDemo() {
   const todayStr = useToday();

@@ -1,6 +1,6 @@
 "use client";
 
-import { useI18n } from "@/i18n/I18nProvider";
+import { useI18n } from "@/hooks";
 
 export default function DashboardScreen() {
   const { t } = useI18n();

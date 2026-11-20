@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useI18n } from "@/i18n/I18nProvider";
+import { useI18n } from "@/hooks";
 
 export default function NotFoundScreen() {
   const { t } = useI18n();

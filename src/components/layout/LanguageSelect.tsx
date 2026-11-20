@@ -1,8 +1,8 @@
 "use client";
 
-import { useI18n } from "@/i18n/I18nProvider";
 import { LANGUAGES, type Lang } from "@/i18n/dictionaries";
 import { GlobeIcon } from "./icons";
+import { useI18n } from "@/hooks";
 
 export default function LanguageSelect({ className = "" }: { className?: string }) {
   const { t, lang, setLang } = useI18n();

@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import { DataGrid, actionColumn, dateTimeFormatter, formatDate, type CellEditParams, type ColDef } from "@/components/ui/grid";
-import { Button, Input, SearchBox, useUI, type SearchField, type SearchValues } from "@/components/ui";
+import { Button, Input, SearchBox, type SearchField, type SearchValues } from "@/components/ui";
 import { noticeApi } from "@/lib/api/notices";
 import type { Notice, NoticeInput } from "@/types/notice";
+import { useUI } from "@/hooks";
 
 type FormState = { mode: "create" } | { mode: "edit"; notice: Notice };
 

@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { Calendar, DatePicker } from "@/components/ui";
 import { addDays, parseDate } from "@/lib/date";
-import { useToday } from "@/lib/useToday";
 import { DemoPage, DemoSection, ValueView } from "./Demo";
+import { useToday } from "@/hooks";
 
 const isWeekend = (d: string) => [0, 6].includes(parseDate(d).getDay());
 

@@ -3,8 +3,8 @@
 import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { flattenMenu } from "@/config/menu";
-import { useI18n } from "@/i18n/I18nProvider";
 import { SearchIcon } from "./icons";
+import { useI18n } from "@/hooks";
 
 /** 헤더 검색바: 전체 메뉴(3depth 포함)를 이름으로 검색해서 이동 */
 export default function MenuSearch() {

@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 import { useMemo, useState } from "react";
 import { MENU, findActiveTrail, type MenuItem } from "@/config/menu";
 import { cn } from "@/lib/cn";
-import { useI18n } from "@/i18n/I18nProvider";
 import { ChevronIcon, MenuItemIcon } from "./icons";
+import { useI18n } from "@/hooks";
 
 // depth 별 들여쓰기/글자 스타일
 const depthStyle = ["pl-3 font-medium text-gray-800", "pl-9 text-gray-700", "pl-14 text-sm text-gray-600"];

@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Button, useUI } from "@/components/ui";
+import { Button } from "@/components/ui";
 import { DemoPage, DemoSection, ValueView } from "./Demo";
+import { useUI } from "@/hooks";
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -17,8 +18,7 @@ export default function UseUIDemo() {
     >
       <DemoSection
         title="기본 사용"
-        code={`import { useUI } from "@/components/ui";
-
+        code={`
 const ui = useUI();
 
 ui.toast.success("저장했습니다.");                          // 토스트
