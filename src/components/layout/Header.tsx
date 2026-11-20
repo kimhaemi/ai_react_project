@@ -6,9 +6,18 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { useI18n } from "@/i18n/I18nProvider";
 import MenuSearch from "./MenuSearch";
 import LanguageSelect from "./LanguageSelect";
-import { LogoIcon, MenuIcon, UserIcon } from "./icons";
+import { cn } from "@/lib/cn";
+import { LogoIcon, UserIcon } from "./icons";
 
-export default function Header({ onToggleMenu }: { onToggleMenu: () => void }) {
+interface HeaderProps {
+  onToggleMenu: () => void;
+  /** 모바일 메뉴가 열려 있으면 햄버거가 X 로 바뀜 */
+  mobileMenuOpen: boolean;
+  /** PC 메뉴가 접혀 있는지 */
+  desktopCollapsed: boolean;
+}
+
+export default function Header({ onToggleMenu, mobileMenuOpen, desktopCollapsed }: HeaderProps) {
   const { t } = useI18n();
   const { user, logout } = useAuth();
   const pathname = usePathname();
@@ -19,9 +28,15 @@ export default function Header({ onToggleMenu }: { onToggleMenu: () => void }) {
         type="button"
         onClick={onToggleMenu}
         aria-label={t("header.menu")}
-        className="rounded-md p-2 text-gray-600 hover:bg-gray-100"
+        aria-expanded={mobileMenuOpen || undefined}
+        data-collapsed={desktopCollapsed || undefined}
+        className={cn(
+          "group flex size-10 items-center justify-center rounded-lg text-gray-600 outline-none",
+          "transition-[background-color,color,transform] duration-200 hover:bg-gray-100 hover:text-gray-900 active:scale-90",
+          "focus-visible:ring-2 focus-visible:ring-blue-300 motion-reduce:transition-none",
+        )}
       >
-        <MenuIcon />
+        <HamburgerIcon open={mobileMenuOpen} />
       </button>
 
       <Link href="/" className="flex shrink-0 items-center gap-2">
@@ -61,5 +76,26 @@ export default function Header({ onToggleMenu }: { onToggleMenu: () => void }) {
       </div>
 
     </header>
+  );
+}
+
+/**
+ * 햄버거 아이콘: 마우스를 올리면 가운데 줄이 짧아지고, 열리면(모바일) X 로 바뀜
+ * PC 에서 메뉴가 접혀 있으면 줄 길이가 엇갈려서 "펼칠 수 있음"을 표시
+ */
+function HamburgerIcon({ open }: { open: boolean }) {
+  const line = "absolute left-0 h-0.5 rounded-full bg-current transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none";
+  return (
+    <span className="relative block h-3.5 w-5" aria-hidden>
+      <span className={cn(line, "top-0 w-5", open && "top-1.5 rotate-45")} />
+      <span
+        className={cn(
+          line,
+          "top-1.5",
+          open ? "w-0 opacity-0" : "w-5 group-hover:w-3 group-data-[collapsed]:w-3 group-data-[collapsed]:group-hover:w-5",
+        )}
+      />
+      <span className={cn(line, "top-3 w-5", open ? "top-1.5 -rotate-45" : "group-hover:w-4 group-data-[collapsed]:w-4")} />
+    </span>
   );
 }
