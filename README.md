@@ -11,6 +11,10 @@ pnpm dev              # 개발 서버 http://localhost:3200 (화면 + /api)
 pnpm build && pnpm start   # 운영 모드
 ```
 
+## 모바일 (웹앱 · 안드로이드 · iOS)
+
+같은 화면을 모바일 웹앱(홈 화면 설치)과 안드로이드·iOS 앱으로도 씁니다. 설정·실행·롤백 방법은 [mobile/README.md](mobile/README.md) 참고.
+
 ## 폴더 구조
 
 ```
@@ -39,8 +43,10 @@ src/
 ├── config/             메뉴 정의 (menu.ts)
 ├── i18n/               다국어 (ko / en)
 ├── lib/                API 클라이언트(axios), 날짜·다운로드 등 헬퍼
+├── mobile/             모바일 웹앱(PWA) — 앱 이름·색, 서비스 워커 등록
 └── types/              공용 타입
 server/                 API 서버 (Express, /api/*)
+mobile/                 안드로이드·iOS 앱 (Capacitor, 별도 pnpm 프로젝트) → mobile/README.md
 data/, uploads/         로컬 저장 데이터 (git 제외)
 ```
 
