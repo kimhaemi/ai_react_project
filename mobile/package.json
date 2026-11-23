@@ -1,0 +1,24 @@
+{
+  "name": "react_test-mobile",
+  "version": "0.1.0",
+  "private": true,
+  "description": "react_test 웹앱을 안드로이드/iOS 앱으로 감싸는 Capacitor 프로젝트",
+  "type": "module",
+  "scripts": {
+    "icons": "node scripts/make-icons.mjs",
+    "sync": "cap sync",
+    "android": "cap open android",
+    "ios": "cap open ios",
+    "run:android": "cap run android",
+    "run:ios": "cap run ios"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.6.2",
+    "@capacitor/core": "8.6.2",
+    "@capacitor/ios": "8.6.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.6.2",
+    "sharp": "0.35.5"
+  }
+}

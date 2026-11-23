@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // 모바일 앱(Capacitor) 프로젝트는 별도 관리
+    "mobile/**",
   ]),
 ]);
 
