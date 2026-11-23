@@ -76,7 +76,9 @@ export default function OrderScreen() {
 ### 로딩 스켈레톤
 
 - 화면별 스켈레톤은 `components/view/<기능>/<이름>Skeleton.tsx` 에 만들고, 라우터 폴더의 `loading.tsx` 에서 불러옵니다. (예: `app/(main)/notice/loading.tsx` → `NoticeSkeleton`)
-- 부품: `Skeleton`(블록), `SkeletonText`(여러 줄), `SkeletonCard`, `SkeletonGrid`(표), `SkeletonScreen`(화면 전체 틀, 화면 읽기 프로그램용 "불러오는 중" 안내 포함) — `@/components/ui`
+- 부품: `Skeleton`(블록), `SkeletonText`(여러 줄), `SkeletonCard`, `SkeletonGrid`(표), `SkeletonList`(목록), `SkeletonScreen`(화면 전체 틀, 화면 읽기 프로그램용 "불러오는 중" 안내 포함) — `@/components/ui`
+- UI 예시 화면은 `DemoSkeleton` 에 `page` 를 넘기면 그 화면 구성대로 그려집니다. 새 예시 화면은 `DEMO_LAYOUTS` 에 섹션 모양을 추가하세요.
+- 화면 안에서 데이터를 처음 불러올 때(공지사항 목록, 파일 목록)도 같은 부품으로 자리를 표시합니다.
 - 쉬머 효과는 `globals.css` 의 `.skeleton` 클래스. 움직임 줄이기 설정이면 은은한 깜빡임으로 바뀝니다.
 
 ### 새 페이지 추가 순서

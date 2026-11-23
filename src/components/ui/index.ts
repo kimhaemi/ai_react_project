@@ -12,6 +12,6 @@ export { Input, type InputProps } from "./Input";
 export { RadioGroup, type RadioGroupProps } from "./Radio";
 export { SearchBox, type SearchBoxProps, type SearchField, type SearchValues } from "./SearchBox";
 export { Select, type SelectActionContext, type SelectOption, type SelectProps } from "./Select";
-export { Skeleton, SkeletonCard, SkeletonGrid, SkeletonScreen, SkeletonText, type SkeletonProps } from "./Skeleton";
+export { Skeleton, SkeletonCard, SkeletonGrid, SkeletonList, SkeletonScreen, SkeletonText, type SkeletonProps } from "./Skeleton";
 export { Tree, getBranchIds, getLeafIds, type TreeNode, type TreeProps } from "./Tree";
 export type { ControlSize } from "./styles";

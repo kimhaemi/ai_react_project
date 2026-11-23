@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Button, DownloadButton, FileUpload } from "@/components/ui";
+import { Button, DownloadButton, FileUpload, SkeletonList } from "@/components/ui";
 import { fileApi } from "@/lib/api/files";
 import { formatBytes } from "@/lib/download";
 import type { StoredFile } from "@/types/file";
@@ -9,7 +9,8 @@ import { DemoPage, DemoSection } from "./Demo";
 import { useDialog, useToast } from "@/hooks";
 
 export default function FileUploadDemo() {
-  const [files, setFiles] = useState<StoredFile[]>([]);
+  // null = 처음 불러오는 중 (다시 불러올 때는 기존 목록 유지)
+  const [files, setFiles] = useState<StoredFile[] | null>(null);
   const [limits, setLimits] = useState<{ maxSizeMB: number; maxFiles: number } | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const reload = useCallback(() => setReloadKey((k) => k + 1), []);
@@ -24,7 +25,7 @@ export default function FileUploadDemo() {
     fileApi
       .list()
       .then((list) => !cancelled && setFiles(list))
-      .catch(() => undefined);
+      .catch(() => !cancelled && setFiles((prev) => prev ?? []));
     return () => {
       cancelled = true;
     };
@@ -111,8 +112,10 @@ export default function FileUploadDemo() {
         />
       </DemoSection>
 
-      <DemoSection title={`업로드된 파일 (${files.length})`} description="파일 다운로드 컴포넌트(DownloadButton)로 받을 수 있습니다.">
-        {files.length === 0 ? (
+      <DemoSection title={`업로드된 파일${files ? ` (${files.length})` : ""}`} description="파일 다운로드 컴포넌트(DownloadButton)로 받을 수 있습니다.">
+        {files === null ? (
+          <SkeletonList rows={3} meta actions={2} />
+        ) : files.length === 0 ? (
           <p className="text-sm text-gray-500">아직 업로드된 파일이 없습니다.</p>
         ) : (
           <ul className="divide-y divide-gray-100 rounded-md border border-gray-200">

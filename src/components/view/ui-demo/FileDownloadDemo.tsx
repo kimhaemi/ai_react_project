@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { DownloadButton } from "@/components/ui";
+import { DownloadButton, SkeletonList } from "@/components/ui";
 import { fileApi } from "@/lib/api/files";
 import { downloadCsv, formatBytes, saveBlob } from "@/lib/download";
 import type { StoredFile } from "@/types/file";
@@ -16,10 +16,14 @@ const SAMPLE = [
 ];
 
 export default function FileDownloadDemo() {
-  const [files, setFiles] = useState<StoredFile[]>([]);
+  // null = 불러오는 중
+  const [files, setFiles] = useState<StoredFile[] | null>(null);
 
   useEffect(() => {
-    fileApi.list().then(setFiles).catch(() => undefined);
+    fileApi
+      .list()
+      .then(setFiles)
+      .catch(() => setFiles([]));
   }, []);
 
   return (
@@ -35,7 +39,9 @@ export default function FileDownloadDemo() {
 // 진행률이 필요 없으면 일반 링크도 가능
 <a href={fileApi.downloadUrl(file.id)} download>받기</a>`}
       >
-        {files.length === 0 ? (
+        {files === null ? (
+          <SkeletonList rows={3} actions={2} />
+        ) : files.length === 0 ? (
           <p className="text-sm text-gray-500">
             받을 파일이 없습니다.{" "}
             <Link href="/components/file-upload" className="text-blue-600 hover:underline">

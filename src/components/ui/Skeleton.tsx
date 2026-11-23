@@ -62,6 +62,25 @@ export function SkeletonGrid({ rows = 8, columns = 5, className }: { rows?: numb
   );
 }
 
+/** 목록 자리: 한 줄에 글(+작은 설명) + 오른쪽 버튼 */
+export function SkeletonList({ rows = 3, meta = false, actions = 1, className }: { rows?: number; meta?: boolean; actions?: number; className?: string }) {
+  return (
+    <ul aria-hidden className={cn("divide-y divide-gray-100 rounded-md border border-gray-200", className)}>
+      {Array.from({ length: rows }, (_, r) => (
+        <li key={r} className="flex items-center gap-3 px-3 py-2.5">
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <Skeleton className="h-3.5" style={{ width: `${45 + ((r * 17) % 35)}%` }} />
+            {meta && <Skeleton className="h-3 w-32" />}
+          </div>
+          {Array.from({ length: actions }, (_, a) => (
+            <Skeleton key={a} className="h-8 w-14" />
+          ))}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 /**
  * 화면 전체 스켈레톤을 감싸는 틀.
  * 화면 읽기 프로그램에는 "불러오는 중" 으로 알려줌.
