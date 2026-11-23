@@ -6,12 +6,12 @@
  *
  * 만드는 파일
  *   - 웹앱(PWA):  public/icons/icon-192.png, icon-512.png, maskable-512.png, apple-touch-icon.png
- *   - 안드로이드:  mobile/android/.../mipmap-*  (android 폴더가 있을 때만)
- *   - iOS:        mobile/ios/.../AppIcon.appiconset (ios 폴더가 있을 때만)
+ *   - 안드로이드:  mobile/android/.../mipmap-* 아이콘, drawable-* 폴더의 splash.png 시작 화면 (android 폴더가 있을 때만)
+ *   - iOS:        mobile/ios/.../AppIcon.appiconset 아이콘, Splash.imageset 시작 화면 (ios 폴더가 있을 때만)
  *
  * 로고를 바꾸려면 아래 BRAND / MARK 를 고치고 다시 실행하세요.
  */
-import { existsSync, mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
@@ -20,6 +20,8 @@ const MOBILE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ROOT = path.resolve(MOBILE, "..");
 
 const BRAND = "#2563eb";
+/** 시작 화면 배경 (웹 본문 배경과 같게) */
+const SPLASH_BG = "#f9fafb";
 /** 32x32 기준 로고 모양 (흰 선) */
 const MARK = `<path d="M9 22V10h5a4 4 0 0 1 0 8h-5m7 0 5 4" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
 
@@ -45,6 +47,26 @@ async function write(file, size, opts, { flatten = false } = {}) {
   console.log("  ✓", path.relative(ROOT, file));
 }
 
+/** 기존 시작 화면 이미지와 같은 크기로, 가운데에 로고를 얹은 이미지로 교체 */
+async function writeSplash(file) {
+  const { width, height } = await sharp(file).metadata();
+  const logo = Math.round(Math.min(width, height) * 0.22);
+  const mark = await sharp(svg({ rounded: true }), { density: 72 * (logo / 32) * 1.1 }).resize(logo, logo).png().toBuffer();
+  const out = await sharp({ create: { width, height, channels: 3, background: SPLASH_BG } })
+    .composite([{ input: mark, gravity: "center" }])
+    .png()
+    .toBuffer();
+  await sharp(out).toFile(file);
+  console.log("  ✓", path.relative(ROOT, file));
+}
+
+/** 폴더 아래에서 이름이 맞는 파일 찾기 */
+function find(dir, test) {
+  return readdirSync(dir, { recursive: true, withFileTypes: true })
+    .filter((e) => e.isFile() && test(e.name))
+    .map((e) => path.join(e.parentPath, e.name));
+}
+
 // 1) 웹앱(PWA)
 const pub = path.join(ROOT, "public/icons");
 await write(path.join(pub, "icon-192.png"), 192, { rounded: true });
@@ -62,10 +84,15 @@ if (existsSync(res)) {
     // 적응형 아이콘 전경 (108dp, 가운데 66dp 만 항상 보임)
     await write(path.join(res, `mipmap-${d}/ic_launcher_foreground.png`), 108 * x, { transparent: true, scale: 0.6 });
   }
+  for (const f of find(res, (n) => n === "splash.png")) await writeSplash(f);
 }
 
 // 3) iOS (cap add ios 이후)
 const appIcon = path.join(MOBILE, "ios/App/App/Assets.xcassets/AppIcon.appiconset");
 if (existsSync(appIcon)) {
   await write(path.join(appIcon, "AppIcon-512@2x.png"), 1024, {}, { flatten: true });
+}
+const splashSet = path.join(MOBILE, "ios/App/App/Assets.xcassets/Splash.imageset");
+if (existsSync(splashSet)) {
+  for (const f of find(splashSet, (n) => n.endsWith(".png"))) await writeSplash(f);
 }
