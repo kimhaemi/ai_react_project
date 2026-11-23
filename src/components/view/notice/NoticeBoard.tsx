@@ -6,6 +6,7 @@ import { Button, Input, SearchBox, type SearchField, type SearchValues } from "@
 import { noticeApi } from "@/lib/api/notices";
 import type { Notice, NoticeInput } from "@/types/notice";
 import { useUI } from "@/hooks";
+import { NoticeGridSkeleton } from "./NoticeSkeleton";
 
 type FormState = { mode: "create" } | { mode: "edit"; notice: Notice };
 
@@ -223,16 +224,21 @@ export default function NoticeBoard() {
         </div>
       )}
 
-      <DataGrid<Notice>
-        loading={loading}
-        rowData={filtered}
-        columnDefs={columnDefs}
-        rowIdField="id"
-        rowSelection={{ mode: "multiRow" }}
-        emptyMessage={isFiltered ? "검색 결과가 없습니다." : "등록된 게시글이 없습니다."}
-        onCellEdit={saveCell}
-        onSelectionChanged={(e) => setSelectedIds(e.api.getSelectedRows().map((r) => r.id))}
-      />
+      {/* 첫 조회 중에는 그리드 대신 스켈레톤, 그 뒤 새로고침은 그리드 자체 로딩 표시 */}
+      {loading && notices.length === 0 && !loadError ? (
+        <NoticeGridSkeleton />
+      ) : (
+        <DataGrid<Notice>
+          loading={loading}
+          rowData={filtered}
+          columnDefs={columnDefs}
+          rowIdField="id"
+          rowSelection={{ mode: "multiRow" }}
+          emptyMessage={isFiltered ? "검색 결과가 없습니다." : "등록된 게시글이 없습니다."}
+          onCellEdit={saveCell}
+          onSelectionChanged={(e) => setSelectedIds(e.api.getSelectedRows().map((r) => r.id))}
+        />
+      )}
       <p className="text-xs text-gray-500">제목·작성자 칸을 더블클릭하면 바로 고칠 수 있습니다. (Enter 저장, Esc 취소) 내용까지 고치려면 [수정] 버튼을 누르세요.</p>
 
       {form && (

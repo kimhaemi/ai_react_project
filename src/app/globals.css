@@ -33,6 +33,28 @@ dialog[open].dialog-in { animation: dialog-in 160ms ease-out; }
   .toast-in, dialog[open].dialog-in { animation: none; }
 }
 
+/* 스켈레톤: 쉬머(빛이 지나가는) 효과.
+   background-attachment: fixed 로 화면 기준 위치를 써서, 크기가 달라도 모든 블록이 같은 줄기로 반짝임 */
+@keyframes skeleton-shimmer {
+  from { background-position: -50vw 0; }
+  to { background-position: 150vw 0; }
+}
+.skeleton {
+  background-color: rgb(229 231 235);
+  background-image: linear-gradient(90deg, transparent 0%, rgb(255 255 255 / 0.7) 50%, transparent 100%);
+  background-size: 50vw 100%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+/* 움직임 줄이기: 쉬머 대신 은은하게 깜빡임 */
+@keyframes skeleton-pulse {
+  50% { opacity: 0.55; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { background-image: none; animation: skeleton-pulse 2s ease-in-out infinite; }
+}
+
 /* 그리드: 더블클릭으로 고칠 수 있는 칸 표시 */
 .ag-cell.dg-editable { cursor: text; }
 .ag-cell.dg-editable:not(.ag-cell-inline-editing):hover {

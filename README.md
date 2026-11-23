@@ -21,7 +21,7 @@ src/
 ├── components/
 │   ├── ui/             공통 UI — 화면에서 가져다 씀
 │   │   ├── Button, Input, Select, Checkbox, Radio, Tree, Calendar, DatePicker,
-│   │   │   SearchBox, FileUpload, DownloadButton, Dialog, Toast, Loading ...
+│   │   │   SearchBox, FileUpload, DownloadButton, Dialog, Toast, Loading, Skeleton ...
 │   │   ├── grid/       DataGrid (AG Grid)      ← import "@/components/ui/grid"
 │   │   └── chart/      Chart (recharts)        ← import "@/components/ui/chart"
 │   ├── view/           화면 (페이지별 실제 UI 와 동작)
@@ -66,6 +66,12 @@ export default function OrderScreen() {
   // ui.toast.success(...) / await ui.alert(...) / await ui.confirm(...) / await ui.dialog({...}) / ui.loading.wrap(...)
 }
 ```
+
+### 로딩 스켈레톤
+
+- 화면별 스켈레톤은 `components/view/<기능>/<이름>Skeleton.tsx` 에 만들고, 라우터 폴더의 `loading.tsx` 에서 불러옵니다. (예: `app/(main)/notice/loading.tsx` → `NoticeSkeleton`)
+- 부품: `Skeleton`(블록), `SkeletonText`(여러 줄), `SkeletonCard`, `SkeletonGrid`(표), `SkeletonScreen`(화면 전체 틀, 화면 읽기 프로그램용 "불러오는 중" 안내 포함) — `@/components/ui`
+- 쉬머 효과는 `globals.css` 의 `.skeleton` 클래스. 움직임 줄이기 설정이면 은은한 깜빡임으로 바뀝니다.
 
 ### 새 페이지 추가 순서
 
