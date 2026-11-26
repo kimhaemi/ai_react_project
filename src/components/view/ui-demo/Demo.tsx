@@ -1,8 +1,19 @@
 import type { ReactNode } from "react";
 
-export function DemoPage({ title, description, children }: { title: string; description: string; children: ReactNode }) {
+export function DemoPage({
+  title,
+  description,
+  wide = false,
+  children,
+}: {
+  title: string;
+  description: string;
+  /** 넓은 표 등 화면 폭을 다 써야 하는 페이지 */
+  wide?: boolean;
+  children: ReactNode;
+}) {
   return (
-    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-4 py-8">
+    <main className={`mx-auto flex w-full flex-1 flex-col gap-6 px-4 py-8 ${wide ? "max-w-[1600px]" : "max-w-5xl"}`}>
       <header>
         <h1 className="text-2xl font-bold">{title}</h1>
         <p className="mt-1 text-gray-600">{description}</p>

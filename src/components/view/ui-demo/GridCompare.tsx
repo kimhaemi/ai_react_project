@@ -32,7 +32,7 @@ const INFO: { label: string; values: Record<GridKey, string> }[] = [
   {
     label: "라이선스",
     values: {
-      sf: "상용 (Community 무료: 연매출 100만$ 미만·개발자 5명 이하)",
+      sf: "상용 (조건부 무료¹)",
       ag: "MIT",
       tui: "MIT",
       rg: "상용 (개발 키 무료)",
@@ -40,7 +40,7 @@ const INFO: { label: string; values: Record<GridKey, string> }[] = [
       revo: "MIT",
       tab: "MIT",
       tan: "MIT",
-      mui: "MIT (Pro·Premium 유료)",
+      mui: "MIT (상위 버전 유료)",
     },
   },
   {
@@ -60,33 +60,33 @@ const INFO: { label: string; values: Record<GridKey, string> }[] = [
   {
     label: "React 연동",
     values: {
-      sf: "공식 React 컴포넌트",
+      sf: "공식 컴포넌트",
       ag: "공식 래퍼",
-      tui: "직접 래퍼 (공식은 React 17까지)",
+      tui: "직접 래퍼²",
       rg: "공식 래퍼",
-      glide: "React 컴포넌트 (공식 18까지, 19 동작 확인)",
+      glide: "React 컴포넌트³",
       revo: "공식 래퍼",
-      tab: "직접 래퍼 (공식은 React 17까지)",
+      tab: "직접 래퍼²",
       tan: "React 훅",
       mui: "React 컴포넌트",
     },
   },
   {
     label: "그리는 방식",
-    values: { sf: "DOM", ag: "DOM", tui: "DOM", rg: "DOM", glide: "캔버스", revo: "DOM", tab: "DOM", tan: "직접 만든 <table>", mui: "DOM" },
+    values: { sf: "DOM", ag: "DOM", tui: "DOM", rg: "DOM", glide: "캔버스", revo: "DOM", tab: "DOM", tan: "직접 마크업", mui: "DOM" },
   },
   {
-    label: "렌더 시간 (이 프로젝트 측정)",
+    label: "렌더 시간 (측정)",
     values: {
-      sf: "미측정 (데모 없음)",
+      sf: "미측정",
       ag: "미측정",
       tui: "10만 행 0.7초",
-      rg: "미측정 (키 필요)",
+      rg: "미측정",
       glide: "100만 행 0.6초",
       revo: "100만 행 0.6초",
       tab: "10만 행 0.45초",
       tan: "10만 행 0.27초",
-      mui: "10만 행 0.29초 (페이지당 100행)",
+      mui: "10만 행 0.29초⁴",
     },
   },
 ];
@@ -289,11 +289,11 @@ const PICKS = [
 function MarkCell({ cell }: { cell: Cell }) {
   const mk = MARK[cell.m];
   return (
-    <td className="border-b border-gray-100 px-2 py-2 text-center align-top">
+    <td className="border-b border-gray-100 px-1 py-2 text-center align-top">
       <span className={`text-base font-semibold ${mk.className}`} title={mk.label}>
         {mk.icon}
       </span>
-      {cell.note && <span className="mt-0.5 block text-[11px] leading-tight text-gray-500">{cell.note}</span>}
+      {cell.note && <span className="mt-0.5 block text-[10px] leading-tight text-gray-500">{cell.note}</span>}
     </td>
   );
 }
@@ -301,6 +301,7 @@ function MarkCell({ cell }: { cell: Cell }) {
 export default function GridCompare() {
   return (
     <DemoPage
+      wide
       title="그리드 기능 비교표"
       description="Syncfusion React Grid 의 기능 목록을 기준으로, 프로젝트에 붙여 본 그리드 8종이 같은 기능을 얼마나 제공하는지 비교합니다. 각 그리드는 무료로 쓸 수 있는 범위 기준 (RealGrid2·Syncfusion 은 상용 전체 기능). 2026-11 기준."
     >
@@ -312,13 +313,19 @@ export default function GridCompare() {
             </span>
           ))}
         </div>
-        <div className="overflow-x-auto rounded border border-gray-200">
-          <table className="w-full min-w-[1080px] border-collapse text-sm">
+        <div className="overflow-hidden rounded border border-gray-200">
+          <table className="w-full table-fixed border-collapse text-xs break-keep [overflow-wrap:anywhere]">
+            <colgroup>
+              <col className="w-[15%]" />
+              {SORTED_GRIDS.map((g) => (
+                <col key={g.key} />
+              ))}
+            </colgroup>
             <thead className="bg-gray-50">
               <tr>
-                <th className="sticky left-0 z-10 w-44 border-b border-gray-200 bg-gray-50 px-3 py-2 text-left font-semibold">항목</th>
+                <th className="border-b border-gray-200 px-2 py-2 text-left text-sm font-semibold">항목</th>
                 {SORTED_GRIDS.map((g, rank) => (
-                  <th key={g.key} className="border-b border-gray-200 px-2 py-2 text-center font-semibold">
+                  <th key={g.key} className="border-b border-gray-200 px-1 py-2 text-center text-[13px] font-semibold">
                     <span className="mb-0.5 block text-[11px] font-normal text-gray-400">{rank === 0 ? "기준" : `${rank}위`}</span>
                     {g.href ? (
                       <Link href={g.href} className="text-blue-600 hover:underline">
@@ -335,21 +342,21 @@ export default function GridCompare() {
             <tbody>
               {INFO.map((row) => (
                 <tr key={row.label}>
-                  <th className="sticky left-0 border-b border-gray-100 bg-white px-3 py-2 text-left font-medium">{row.label}</th>
+                  <th className="border-b border-gray-100 px-2 py-2 text-left font-medium">{row.label}</th>
                   {SORTED_GRIDS.map((g) => (
-                    <td key={g.key} className="border-b border-gray-100 px-2 py-2 text-center text-xs text-gray-700">
+                    <td key={g.key} className="border-b border-gray-100 px-1 py-2 text-center text-gray-700">
                       {row.values[g.key]}
                     </td>
                   ))}
                 </tr>
               ))}
               <tr className="bg-blue-50/60">
-                <th className="sticky left-0 border-b border-gray-200 bg-blue-50 px-3 py-2 text-left font-semibold">
+                <th className="border-b border-gray-200 px-2 py-2 text-left font-semibold">
                   Syncfusion 대비 커버율
                   <span className="block text-[11px] font-normal text-gray-500">◎ 1점 · ○ 0.5점</span>
                 </th>
                 {SORTED_GRIDS.map((g) => (
-                  <td key={g.key} className="border-b border-gray-200 px-2 py-2 text-center">
+                  <td key={g.key} className="border-b border-gray-200 px-1 py-2 text-center">
                     <span className="text-base font-bold text-gray-900">{SCORE[g.key].pct}%</span>
                     <span className="block text-[11px] text-gray-500">
                       ◎{SCORE[g.key].yes} ○{SCORE[g.key].part} / {FEATURES.length}
@@ -362,13 +369,13 @@ export default function GridCompare() {
                 return [
                   header && (
                     <tr key={`g-${row.group}`} className="bg-gray-50">
-                      <th colSpan={SORTED_GRIDS.length + 1} className="px-3 py-1.5 text-left text-xs font-semibold text-gray-500">
+                      <th colSpan={SORTED_GRIDS.length + 1} className="px-2 py-1.5 text-left text-xs font-semibold text-gray-500">
                         {row.group}
                       </th>
                     </tr>
                   ),
                   <tr key={row.label}>
-                    <th className="sticky left-0 border-b border-gray-100 bg-white px-3 py-2 text-left font-medium">
+                    <th className="border-b border-gray-100 px-2 py-2 text-left font-medium">
                       {row.label}
                       <span className="block text-[11px] font-normal text-gray-500">
                         지원 {row.score} / {SORTED_GRIDS.length - 1}
@@ -383,7 +390,13 @@ export default function GridCompare() {
             </tbody>
           </table>
         </div>
-        <p className="mt-3 text-xs text-gray-500">
+        <ol className="mt-3 space-y-0.5 text-xs text-gray-500">
+          <li>¹ Syncfusion Community 라이선스: 연매출 100만 달러 미만, 개발자 5명 이하면 무료.</li>
+          <li>² 공식 React 래퍼가 React 17 에서 멈춰 있어 본체를 직접 감쌈.</li>
+          <li>³ 공식 지원은 React 18 까지지만 React 19 에서 동작 확인.</li>
+          <li>⁴ MUI X 무료 버전은 한 페이지 최대 100행 (그 이상은 Pro).</li>
+        </ol>
+        <p className="mt-2 text-xs text-gray-500">
           ※ 렌더 시간은 이 프로젝트 데모에서 같은 데이터로 잰 대략값입니다 (헤드리스 Chromium, 운영 빌드). RealGrid2 는 라이선스 키가 없어 화면 동작은
           확인하지 못했고, Syncfusion 은 이 프로젝트에 데모가 없어 둘 다 문서 기준입니다. 유료 버전 조건은 바뀔 수 있으니 도입 전 각 사이트에서 다시 확인하세요.
         </p>
