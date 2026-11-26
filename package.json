@@ -18,7 +18,9 @@
     "next": "16.4.6",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "recharts": "^3.11.0"
+    "recharts": "^3.11.0",
+    "tui-date-picker": "^4.3.3",
+    "tui-grid": "^4.21.23"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "4.3.3",

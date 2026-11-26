@@ -36,6 +36,7 @@ export const MENU: MenuItem[] = [
     children: [
       { id: "ui-use-ui", labelKey: "menu.ui.useUI", href: "/components/use-ui" },
       { id: "ui-grid", labelKey: "menu.ui.grid", href: "/components/grid" },
+      { id: "ui-tui-grid", labelKey: "menu.ui.tuiGrid", href: "/components/tui-grid" },
       { id: "ui-tree", labelKey: "menu.ui.tree", href: "/components/tree" },
       { id: "ui-input", labelKey: "menu.ui.input", href: "/components/input" },
       { id: "ui-checkbox", labelKey: "menu.ui.checkbox", href: "/components/checkbox" },
