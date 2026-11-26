@@ -39,6 +39,7 @@ export const MENU: MenuItem[] = [
         id: "ui-grids",
         labelKey: "menu.ui.grids",
         children: [
+          { id: "ui-grid-compare", labelKey: "menu.ui.gridCompare", href: "/components/grid-compare" },
           { id: "ui-grid", labelKey: "menu.ui.grid", href: "/components/grid" },
           { id: "ui-tui-grid", labelKey: "menu.ui.tuiGrid", href: "/components/tui-grid" },
           { id: "ui-realgrid", labelKey: "menu.ui.realGrid", href: "/components/realgrid" },
