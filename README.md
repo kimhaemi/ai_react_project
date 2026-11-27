@@ -21,7 +21,7 @@ Next.js(App Router) + React + TypeScript 로 만든 관리 화면입니다. 화�
 | 스타일 | Tailwind CSS 4 |
 | API 서버 | Express 5 (`server/`, tsx 로 실행), multer (파일 업로드) |
 | 데이터 요청 | axios |
-| 공통 그리드 / 차트 | AG Grid Community, recharts |
+| 공통 그리드 / 차트 / 지도 | AG Grid Community, recharts, 카카오맵 JavaScript SDK |
 | 비교용 그리드 | TOAST UI Grid, RealGrid2, Glide Data Grid, RevoGrid, Tabulator, TanStack Table, MUI X DataGrid |
 | 모바일 | PWA, Capacitor (안드로이드·iOS) |
 | 패키지 매니저 | pnpm |
@@ -55,6 +55,7 @@ pnpm lint
 | `NEXT_PUBLIC_API_BASE_URL` | `/api` | API 주소 (같은 서버면 그대로) |
 | `NEXT_PUBLIC_API_TIMEOUT` | `10000` | API 요청 제한 시간(ms) |
 | `NEXT_PUBLIC_REALGRID_LICENSE` | (비어 있음) | RealGrid2 라이선스 키. [개발용 키 발급](https://service.realgrid.com/start) (도메인 단위). 비우면 RealGrid2 화면에 안내만 표시 |
+| `NEXT_PUBLIC_KAKAO_MAP_KEY` | (비어 있음) | 카카오맵 JavaScript 키. [카카오 개발자 콘솔](https://developers.kakao.com)에서 발급하고 플랫폼 › Web 에 사이트 도메인 등록, 카카오맵 사용 설정 ON. 비우면 지도 자리에 안내만 표시 |
 | `NOTICE_DATA_FILE` | `data/notices.json` | 공지사항 저장 파일 |
 | `UPLOAD_DIR` | `uploads` | 업로드 파일 저장 폴더 |
 | `UPLOAD_MAX_SIZE_MB` | `10` | 파일 1개 최대 크기(MB) |
@@ -74,6 +75,7 @@ pnpm lint
 | UI 컴포넌트 › **그리드** › 기능 비교표 | `/components/grid-compare` |
 | UI 컴포넌트 › 그리드 › AG Grid (공통 DataGrid) | `/components/grid` |
 | UI 컴포넌트 › 그리드 › TOAST UI Grid · RealGrid2 · Glide · RevoGrid · Tabulator · TanStack Table · MUI X | `/components/tui-grid`, `/realgrid`, `/glide-grid`, `/revogrid`, `/tabulator`, `/tanstack-table`, `/mui-grid` |
+| UI 컴포넌트 › 카카오맵 | `/components/kakao-map` |
 | UI 컴포넌트 › 트리 · 입력창 · 체크박스 · 라디오 · 버튼 · 셀렉트 · 검색박스 · 차트 · 달력 · 기간 달력 · 파일 업로드/다운로드 · 토스트 · 알림/확인 팝업 | `/components/<이름>` |
 | 로그인 | `/login` |
 
@@ -138,6 +140,7 @@ src/
 │   │   ├── Button, Input, Select, Checkbox, Radio, Tree, Calendar, DatePicker,
 │   │   │   SearchBox, FileUpload, DownloadButton, Dialog, Toast, Loading, Skeleton ...
 │   │   ├── grid/       DataGrid (AG Grid)            ← import "@/components/ui/grid"
+│   │   ├── kakao-map/  KakaoMap (카카오맵 SDK)        ← import "@/components/ui/kakao-map"
 │   │   ├── tui-grid/   TuiGrid (TOAST UI Grid 래퍼)  ← 그리드 비교용
 │   │   └── chart/      Chart (recharts)              ← import "@/components/ui/chart"
 │   ├── view/           화면 (페이지별 실제 UI 와 동작)

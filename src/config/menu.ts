@@ -58,6 +58,7 @@ export const MENU: MenuItem[] = [
       { id: "ui-select", labelKey: "menu.ui.select", href: "/components/select" },
       { id: "ui-search-box", labelKey: "menu.ui.searchBox", href: "/components/search-box" },
       { id: "ui-chart", labelKey: "menu.ui.chart", href: "/components/chart" },
+      { id: "ui-kakao-map", labelKey: "menu.ui.kakaoMap", href: "/components/kakao-map" },
       { id: "ui-calendar", labelKey: "menu.ui.calendar", href: "/components/calendar" },
       { id: "ui-date-range", labelKey: "menu.ui.dateRange", href: "/components/date-range" },
       { id: "ui-file-upload", labelKey: "menu.ui.fileUpload", href: "/components/file-upload" },

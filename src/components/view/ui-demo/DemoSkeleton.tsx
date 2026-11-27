@@ -13,6 +13,7 @@ type Body =
   | "pickers" // 날짜 선택칸 2열
   | "chart" // 차트
   | "grid" // 표
+  | "map" // 버튼 줄 + 지도
   | "tree" // 트리 2개
   | "upload" // 끌어다 놓기 영역
   | "list" // 파일 목록
@@ -42,6 +43,7 @@ export const DEMO_LAYOUTS = {
   "file-upload": [s("upload"), s("buttons"), s("upload"), s("list", false)],
   grid: [s("grid")],
   input: [s("fields2"), s("fields3"), s("fields3")],
+  "kakao-map": [s("map"), s("map")],
   radio: [s("choices"), s("choices"), s("buttons")],
   "search-box": [s("search"), s("text", false)],
   select: [s("fields2"), s("fields2"), s("fields2"), s("fields3")],
@@ -161,6 +163,17 @@ function SectionBody({ body }: { body: Body }) {
             <Skeleton className="h-3 w-16" />
             <Skeleton className="h-3 w-16" />
           </div>
+        </div>
+      );
+    case "map":
+      return (
+        <div className="flex flex-col gap-3">
+          <div className="flex gap-2">
+            <Skeleton className="h-8 w-20" />
+            <Skeleton className="h-8 w-20" />
+            <Skeleton className="h-8 w-20" />
+          </div>
+          <Skeleton className="h-80 w-full" />
         </div>
       );
     case "grid":
