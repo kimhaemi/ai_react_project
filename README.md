@@ -8,6 +8,7 @@ Next.js(App Router) + React + TypeScript 로 만든 관리 화면입니다. 화�
 - [환경 변수](#환경-변수)
 - [화면 목록](#화면-목록)
 - [그리드 비교](#그리드-비교)
+- [지도](#지도)
 - [API](#api)
 - [모바일](#모바일-웹앱--안드로이드--ios)
 - [폴더 구조](#폴더-구조)
@@ -21,7 +22,8 @@ Next.js(App Router) + React + TypeScript 로 만든 관리 화면입니다. 화�
 | 스타일 | Tailwind CSS 4 |
 | API 서버 | Express 5 (`server/`, tsx 로 실행), multer (파일 업로드) |
 | 데이터 요청 | axios |
-| 공통 그리드 / 차트 / 지도 | AG Grid Community, recharts, 카카오맵 JavaScript SDK |
+| 공통 그리드 / 차트 | AG Grid Community, recharts |
+| 지도 | 카카오맵 JavaScript SDK, Google Maps JavaScript API, 네이버 지도 API v3 (모두 스크립트로 불러옴, 패키지 없음) |
 | 비교용 그리드 | TOAST UI Grid, RealGrid2, Glide Data Grid, RevoGrid, Tabulator, TanStack Table, MUI X DataGrid |
 | 모바일 | PWA, Capacitor (안드로이드·iOS) |
 | 패키지 매니저 | pnpm |
@@ -55,7 +57,10 @@ pnpm lint
 | `NEXT_PUBLIC_API_BASE_URL` | `/api` | API 주소 (같은 서버면 그대로) |
 | `NEXT_PUBLIC_API_TIMEOUT` | `10000` | API 요청 제한 시간(ms) |
 | `NEXT_PUBLIC_REALGRID_LICENSE` | (비어 있음) | RealGrid2 라이선스 키. [개발용 키 발급](https://service.realgrid.com/start) (도메인 단위). 비우면 RealGrid2 화면에 안내만 표시 |
-| `NEXT_PUBLIC_KAKAO_MAP_KEY` | (비어 있음) | 카카오맵 JavaScript 키. [카카오 개발자 콘솔](https://developers.kakao.com)에서 발급하고 플랫폼 › Web 에 사이트 도메인 등록, 카카오맵 사용 설정 ON. 비우면 지도 자리에 안내만 표시 |
+| `NEXT_PUBLIC_KAKAO_MAP_KEY` | (비어 있음) | 카카오맵 JavaScript 키. 자세한 발급 방법은 [지도](#지도) 참고. 비우면 지도 자리에 안내만 표시 |
+| `NEXT_PUBLIC_GOOGLE_MAP_KEY` | (비어 있음) | Google Maps API 키. 비우면 안내만 표시 |
+| `NEXT_PUBLIC_GOOGLE_MAP_ID` | (비어 있음) | Google 고급 마커용 지도 ID. 비우면 테스트용 `DEMO_MAP_ID` |
+| `NEXT_PUBLIC_NAVER_MAP_KEY` | (비어 있음) | 네이버 지도 Client ID. 비우면 안내만 표시 |
 | `NOTICE_DATA_FILE` | `data/notices.json` | 공지사항 저장 파일 |
 | `UPLOAD_DIR` | `uploads` | 업로드 파일 저장 폴더 |
 | `UPLOAD_MAX_SIZE_MB` | `10` | 파일 1개 최대 크기(MB) |
@@ -75,7 +80,8 @@ pnpm lint
 | UI 컴포넌트 › **그리드** › 기능 비교표 | `/components/grid-compare` |
 | UI 컴포넌트 › 그리드 › AG Grid (공통 DataGrid) | `/components/grid` |
 | UI 컴포넌트 › 그리드 › TOAST UI Grid · RealGrid2 · Glide · RevoGrid · Tabulator · TanStack Table · MUI X | `/components/tui-grid`, `/realgrid`, `/glide-grid`, `/revogrid`, `/tabulator`, `/tanstack-table`, `/mui-grid` |
-| UI 컴포넌트 › 카카오맵 | `/components/kakao-map` |
+| UI 컴포넌트 › **지도** › 지도 비교 | `/components/map-compare` |
+| UI 컴포넌트 › 지도 › 카카오맵 · Google 지도 · 네이버 지도 | `/components/kakao-map`, `/google-map`, `/naver-map` |
 | UI 컴포넌트 › 트리 · 입력창 · 체크박스 · 라디오 · 버튼 · 셀렉트 · 검색박스 · 차트 · 달력 · 기간 달력 · 파일 업로드/다운로드 · 토스트 · 알림/확인 팝업 | `/components/<이름>` |
 | 로그인 | `/login` |
 
@@ -106,6 +112,25 @@ AG Grid 외에 국내·해외 그리드 7종을 프로젝트에 직접 붙여 �
 - **Glide Data Grid**: 공식 지원은 React 18 까지지만 React 19 에서 동작을 확인했습니다. 편집기용 `<div id="portal">` 이 필요하고, 같이 설치해야 하는 패키지(`marked@4`, `lodash`, `react-responsive-carousel`)가 있습니다.
 - **브라우저 전용 그리드**(RealGrid2, Glide, RevoGrid, Tabulator, TanStack, MUI)는 `next/dynamic` 의 `ssr: false` 로 불러옵니다 (`ui-demo/GridDemoLoaders.tsx`, `RealGridDemoLoader.tsx`).
 - 데모 공통 데이터와 행 수 선택 UI는 `ui-demo/grid-sample.tsx` 에 있습니다.
+
+## 지도
+
+카카오맵 · Google 지도 · 네이버 지도를 같은 모양의 컴포넌트로 감쌌습니다 (`center`, `markers`, `onClick`, `onMarkerClick`, `onIdle`). 확대 단위만 다릅니다 (카카오 `level` 은 작을수록 가까이, 구글·네이버 `zoom` 은 클수록 가까이). 차이는 앱의 `UI 컴포넌트 › 지도 › 지도 비교` 에 정리했습니다.
+
+키는 모두 브라우저에 노출되므로, 콘솔에서 **접속할 주소를 등록해 다른 사이트가 못 쓰게** 막습니다. 개발 PC(`http://localhost:3200`), 안드로이드 에뮬레이터(`http://10.0.2.2:3200`), 운영 도메인을 모두 등록하세요.
+
+| 지도 | 키 발급 | 해야 할 설정 |
+|---|---|---|
+| 카카오맵 | [Kakao Developers](https://developers.kakao.com) › 내 애플리케이션 › 앱 키 › **JavaScript 키** | 플랫폼 › Web › 사이트 도메인 등록, 카카오맵 사용 설정 ON |
+| Google 지도 | [Google Cloud 콘솔](https://console.cloud.google.com) › 사용자 인증 정보 › API 키 | Maps JavaScript API 사용 설정, 결제 계정 연결, HTTP 리퍼러 제한(`http://localhost:3200/*` 등). 고급 마커에 지도 ID 필요 (없으면 `DEMO_MAP_ID`) |
+| 네이버 지도 | [네이버 클라우드 플랫폼](https://console.ncloud.com) › Maps › Application 등록 › **Client ID** | Dynamic Map 선택, Web 서비스 URL 등록, 결제 수단 등록 |
+
+붙이면서 알게 된 점:
+
+- 세 SDK 모두 공식 React 패키지 없이 스크립트를 한 번만 넣는 로더(`ui/map/loader.ts`)로 불러옵니다. 카카오는 `autoload=false` 로 불러와 `kakao.maps.load()` 로 초기화해야 합니다.
+- 네이버는 키 파라미터가 예전 `ncpClientId` 에서 **`ncpKeyId`** 로 바뀌었습니다. 오래된 예제는 동작하지 않습니다.
+- 구글의 예전 `google.maps.Marker` 는 지원 중단 예정이라 `AdvancedMarkerElement` 를 씁니다. 클릭 이벤트는 `gmp-click` 입니다.
+- 구글·네이버는 키가 틀려도 스크립트는 정상으로 받아지고, 나중에 `gm_authFailure` / `navermap_authFailure` 전역 함수만 불립니다. 컴포넌트가 이를 받아 지도 자리에 오류를 보여 줍니다.
 
 ## API
 
@@ -140,7 +165,10 @@ src/
 │   │   ├── Button, Input, Select, Checkbox, Radio, Tree, Calendar, DatePicker,
 │   │   │   SearchBox, FileUpload, DownloadButton, Dialog, Toast, Loading, Skeleton ...
 │   │   ├── grid/       DataGrid (AG Grid)            ← import "@/components/ui/grid"
-│   │   ├── kakao-map/  KakaoMap (카카오맵 SDK)        ← import "@/components/ui/kakao-map"
+│   │   ├── map/        지도 공통 (타입, 스크립트 로더, 안내 문구)
+│   │   ├── kakao-map/  KakaoMap                      ← import "@/components/ui/kakao-map"
+│   │   ├── google-map/ GoogleMap                     ← import "@/components/ui/google-map"
+│   │   ├── naver-map/  NaverMap                      ← import "@/components/ui/naver-map"
 │   │   ├── tui-grid/   TuiGrid (TOAST UI Grid 래퍼)  ← 그리드 비교용
 │   │   └── chart/      Chart (recharts)              ← import "@/components/ui/chart"
 │   ├── view/           화면 (페이지별 실제 UI 와 동작)

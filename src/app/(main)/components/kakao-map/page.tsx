@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import KakaoMapDemo from "@/components/view/ui-demo/KakaoMapDemo";
+import { KakaoMapDemo } from "@/components/view/ui-demo/MapDemo";
 
 export const metadata: Metadata = { title: "카카오맵" };
 
